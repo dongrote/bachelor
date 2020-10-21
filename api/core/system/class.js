@@ -5,6 +5,10 @@ class SystemHealth {
   constructor() {
     this.startedAt = new day();
     this.websocketClients = [];
+    this.db = {
+      connected: false,
+      location: null,
+    };
   }
 
   websocketClientConnect(client) {
@@ -13,6 +17,16 @@ class SystemHealth {
 
   websocketClientDisconnect(client) {
     this.websocketClients = this.websocketClients.filter(id => id !== client.id);
+  }
+
+  databaseConnect(details) {
+    this.db.connected = true;
+    this.db.location = details;
+  }
+
+  databaseDisconnect() {
+    this.db.connected = false;
+    this.db.location = null;
   }
 
   uptime() {
@@ -24,6 +38,7 @@ class SystemHealth {
     return {
       websockets: this.websocketClients,
       uptime: this.uptime(),
+      database: this.db,
     };
   }
 }

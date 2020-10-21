@@ -2,8 +2,11 @@
 const express = require('express');
 exports = module.exports = express();
 const log = require('debug-logger')('api:app'),
+  env = require('./env'),
   HttpError = require('http-error-constructor'),
   cookieParser = require('cookie-parser'),
+  core = require('./core'),
+  models = require('./db/models'),
   logger = require('morgan');
 
 const router = require('./routes');
@@ -31,3 +34,10 @@ exports.use((err, req, res, next) => {
       },
     });
 });
+
+models.sequelize.authenticate()
+  .then(() => core.system.databaseConnect(env.sqliteDatabasePath()))
+  .catch(err => {
+    log.error('sequelize error', err);
+    core.system.databaseDisconnect();
+  });
