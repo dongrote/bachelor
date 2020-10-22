@@ -1,9 +1,7 @@
 'use strict';
-const groups = require('./groups');
+const bindingsToGroups = require('./bindingsToGroups');
 
-exports = module.exports = async user => {
-  return {
-    userId: user.id,
-    groups: await groups(user.id),
-  }
-};
+exports = module.exports = user => Promise.resolve({
+  userId: user.id,
+  groups: bindingsToGroups(user.ResourceGroupRoleBindings),
+});

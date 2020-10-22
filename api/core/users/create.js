@@ -1,13 +1,18 @@
 'use strict';
-const bcrypt = require('bcryptjs'),
+const hashPassword = require('./hashPassword'),
+  rbac = require('../rbac'),
+  findById = require('./findById'),
   models = require('../../db/models');
 
 exports = module.exports = async (username, password) => {
-  const salt = await bcrypt.genSalt();
-  const passwordHash = await bcrypt.hash(password, salt);
+  const passwordHash = await hashPassword(password);
   try {
-    const user = await models.User.create({username, passwordHash});
-    return user.toJSON();
+    const user = await models.User
+      .create({username, passwordHash, displayName: username});
+    const userGroup = await rbac.createUserGroup(user.id);
+    const userGroupRole = await rbac.createUserGroupRoles(userGroup.id);
+    await rbac.createUserGroupRoleBindings(user.id, userGroupRole.id);
+    return await findById(user.id);
   } catch (e) {
     if (e instanceof models.Sequelize.UniqueConstraintError) {
       throw new Error('username already exists');
