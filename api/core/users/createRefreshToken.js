@@ -2,7 +2,7 @@
 const env = require('../../env'),
   auth = require('../auth');
 
-exports = module.exports = userId => {
+exports = module.exports = async userId => {
   const token = new auth.RefreshToken({
     key: env.tokenSigningKey(),
     algorithm: env.tokenSigningAlgorithm(),

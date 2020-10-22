@@ -1,7 +1,8 @@
 'use strict';
 const express = require('express');
 exports = module.exports = express();
-const log = require('debug-logger')('api:app'),
+const _ = require('lodash'),
+  log = require('debug-logger')('api:app'),
   env = require('./env'),
   HttpError = require('http-error-constructor'),
   cookieParser = require('cookie-parser'),

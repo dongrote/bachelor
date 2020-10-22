@@ -1,8 +1,8 @@
 'use strict';
 const env = require('../../env'),
-  SignedToken = require('./SignedToken');
+  SignedUserToken = require('./SignedUserToken');
 
-class RefreshToken extends SignedToken {
+class RefreshToken extends SignedUserToken {
   cookieName() { return env.refreshTokenCookieName(); }
 }
 

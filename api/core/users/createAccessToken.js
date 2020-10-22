@@ -1,9 +1,10 @@
 'use strict';
 const env = require('../../env'),
   auth = require('../auth'),
+  accessTokenPayload = require('./accessTokenPayload'),
   findById = require('./findById');
 
-exports = module.exports = refreshToken => {
+exports = module.exports = async refreshToken => {
   const token = new auth.AccessToken({
     key: env.tokenSigningKey(),
     algorithm: env.tokenSigningAlgorithm(),
