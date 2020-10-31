@@ -1,13 +1,16 @@
 'use strict';
-const core = require('../../core');
+const HttpError = require('http-error-constructor'),
+  core = require('../../core');
 
 exports = module.exports = async (req, res, next) => {
   try {
     const {username, password} = req.body;
-    const tokens = await core.users.createTokens(username, password);
-    tokens.forEach(token => res.cookie(token.cookieName(), token.cookieValue(), {httpOnly: true}));
-    res.sendStatus(tokens.length === 0 ? 400 : 204);
+    const user = await core.User.verifyCredentials(username, password);
+    if (user) {
+      core.http.loginUser(res, await core.auth.createUserTokens(user));
+    }
+    res.sendStatus(user ? 204 : 400);
   } catch (e) {
-    return next(e);
+    next(new HttpError(400, e.message));
   }
 };
