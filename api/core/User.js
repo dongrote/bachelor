@@ -47,7 +47,7 @@ class User {
       ? await User.findById(user.id) : null;
   }
   constructor(data) {
-    log.info(data);
+    log.debug(data);
     this.dbrow = data;
     this.id = data.id;
     this.username = data.username;

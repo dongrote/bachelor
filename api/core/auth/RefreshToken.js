@@ -21,7 +21,7 @@ RefreshToken.create = async user => {
   return token;
 };
 
-RefreshToken.verify = async user => {
+RefreshToken.verify = async (signed, key, options) => {
   const algorithm = _.get(options, 'algorithm', env.tokenSigningAlgorithm());
   const token = new RefreshToken({key, algorithm});
   await token.verify(signed);
