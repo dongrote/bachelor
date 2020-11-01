@@ -13,6 +13,9 @@ module.exports = {
         unique: true,
         allowNull: false,
       },
+      systemRole: {
+        type: Sequelize.STRING
+      },
       displayName: {
         type: Sequelize.STRING
       },

@@ -5,7 +5,8 @@ export default props => (
   <Card>
     <Card.Content>
       <Card.Header>{props.displayName}</Card.Header>
-      <Card.Meta>{props.username}</Card.Meta>
+      <Card.Meta>System Role: {props.role}</Card.Meta>
+      <Card.Description>{props.username}</Card.Description>
     </Card.Content>
     <Card.Content extra>
       idk my bff jill

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "migrate": "cd db ; sequelize db:migrate --config config/config.js",
-    "nodemon": "nodemon ./bin/www",
+    "nodemon": "nodemon -i ./public ./bin/www",
     "seed": "cd db ; sequelize db:seed:all --config config/config.js",
     "start": "node ./bin/www"
   },

@@ -9,13 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       SeasonId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Seasons',
+          key: 'id'
+        },
       },
       airDate: {
         type: Sequelize.DATE
       },
       episodeNumber: {
         type: Sequelize.INTEGER
+      },
+      title: {
+        type: Sequelize.STRING(64)
       },
       createdAt: {
         allowNull: false,

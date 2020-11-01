@@ -38,6 +38,7 @@ class App extends Component {
           ? <LandingView onSignIn={() => this.onSignIn()}/>
           : <UserView
               username={this.state.user.username}
+              role={this.state.user.systemRole}
               displayName={this.state.user.displayName}
               groups={this.state.user.groups}
             />}

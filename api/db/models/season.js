@@ -12,10 +12,12 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       models.Season.belongsTo(models.ResourceGroup);
       models.Season.hasMany(models.SeasonCastMember);
+      models.Season.hasMany(models.Episode);
     }
   };
   Season.init({
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(16),
+    name: DataTypes.STRING(64),
     startedAt: DataTypes.DATE,
     endedAt: DataTypes.DATE
   }, {

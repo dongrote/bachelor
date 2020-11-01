@@ -7,7 +7,7 @@ const _ = require('lodash'),
 exports = module.exports = async (req, res, next) => {
   const {username, password} = _.pick(req.body, ['username', 'password']);
   try {
-    const user = await core.User.create(username, password);
+    const user = await core.User.create(username, password, 'user');
     core.http.loginUser(res, await core.auth.createUserTokens(user));
     res.sendStatus(204);
   } catch (e) {

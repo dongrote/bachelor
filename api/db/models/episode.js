@@ -10,13 +10,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      models.Episode.belongsTo(models.Season);
     }
   };
   Episode.init({
     SeasonId: DataTypes.INTEGER,
     airDate: DataTypes.DATE,
-    episodeNumber: DataTypes.INTEGER
+    episodeNumber: DataTypes.INTEGER,
+    title: DataTypes.STRING(64),
   }, {
     sequelize,
     modelName: 'Episode',

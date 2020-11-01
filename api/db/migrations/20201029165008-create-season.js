@@ -16,7 +16,10 @@ module.exports = {
         },
       },
       type: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(16)
+      },
+      name: {
+        type: Sequelize.STRING(64)
       },
       startedAt: {
         type: Sequelize.DATE
