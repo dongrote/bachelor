@@ -1,11 +1,7 @@
 'use strict';
-
-class Rose {
-  static async findById(roseId) {}
-  constructor(details) {
-    this.episodeId = details.episodeId;
-    this.createdAt = details.createdAt;
-  }
+function Rose(data) {
+  this.id = data.id;
+  this.EpisodeId = data.EpisodeId;
+  this.createAt = data.createdAt;
 }
-
 exports = module.exports = Rose;

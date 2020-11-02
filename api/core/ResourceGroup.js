@@ -33,26 +33,26 @@ ResourceGroup.findById = async (accessToken, resourceGroupId) => {
   return resourceGroup ? new ResourceGroup(resourceGroup.toJSON()) : null;
 };
 
-ResourceGroup.prototype.createInitialOwner = async accessToken => {
+ResourceGroup.prototype.createInitialOwner = async function(accessToken) {
   await ResourceGroupRole.createInitialOwner(accessToken, this);
 };
 
-ResourceGroup.prototype.findRole = async (accessToken, roleName) => {
+ResourceGroup.prototype.findRole = async function(accessToken, roleName) {
   return await ResourceGroupRole.findByName(accessToken, this, roleName);
 };
 
-ResourceGroup.prototype.bindUserRole = async (accessToken, user, resourceGroupRole) => {
+ResourceGroup.prototype.bindUserRole = async function(accessToken, user, resourceGroupRole) {
   if (!accessToken.hasGroupRole(this.id, 'owner')) throw new MissingRoleError('owner');
   await models.ResourceGroupRoleBinding
     .findOrCreate({UserId: user.id, ResourceGroupRoleId: resourceGroupRole.id});
 };
 
-ResourceGroup.prototype.unbindUserRole = async (accessToken, user, resourceGroupRole) => {
+ResourceGroup.prototype.unbindUserRole = async function(accessToken, user, resourceGroupRole) {
   if (!accessToken.hasGroupRole(this.id, 'owner')) throw new MissingRoleError('owner');
   await models.ResourceGroupRoleBinding
     .destroy({where: {UserId: user.id, ResourceGroupRoleId: resourceGroupRole.id}});
 };
 
-ResourceGroup.prototype.userRoles = async accessToken => {
+ResourceGroup.prototype.userRoles = async function(accessToken) {
   if (!accessToken.isMemberOfGroup(this.id)) throw new MissingMembershipError(this.id);
 };

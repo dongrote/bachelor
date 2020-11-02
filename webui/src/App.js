@@ -8,6 +8,7 @@ class App extends Component {
   state = {
     view: 'landing',
     user: null,
+    seasons: [],
   };
 
   async fetchUserProfile() {
@@ -18,9 +19,18 @@ class App extends Component {
     }
   }
 
+  async fetchAllSeasons() {
+    const res = await fetch('/api/seasons');
+    if (res.ok) {
+      const json = await res.json();
+      this.setState({season: json.seasons});
+    }
+  }
+
   async componentDidMount() {
     // register io handlers
     await this.fetchUserProfile();
+    await this.fetchAllSeasons();
   }
 
   componentWillUnmount() {
@@ -29,6 +39,14 @@ class App extends Component {
 
   async onSignIn() {
     await this.fetchUserProfile();
+  }
+
+  async onSignOut() {
+    this.setState({user: null, view: 'landing'});
+  }
+
+  async onSeasonCreate() {
+    await this.fetchAllSeasons();
   }
 
   render() {
@@ -41,6 +59,9 @@ class App extends Component {
               role={this.state.user.systemRole}
               displayName={this.state.user.displayName}
               groups={this.state.user.groups}
+              seasons={this.state.seasons}
+              onSeasonCreate={() => this.onSeasonCreate()}
+              onSignOut={() => this.onSignOut()}
             />}
       </Container>
     );

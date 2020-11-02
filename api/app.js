@@ -18,7 +18,8 @@ exports.use('/', express.static('./public'));
 exports.use(express.json());
 exports.use(express.urlencoded({ extended: false }));
 exports.use(cookieParser());
-exports.use(core.http.middleware.tokens);
+exports.use(core.http.middleware.refreshToken);
+exports.use(core.http.middleware.accessToken);
 
 /** routes */
 exports.use('/', router);

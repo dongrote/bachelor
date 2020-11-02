@@ -7,6 +7,7 @@ function SignedToken(options) {
   this.signingKey = _.get(options, 'signingKey', _.get(options, 'key'));
   this.verifykey = _.get(options, 'verifykey', _.get(options, 'key'));
   this.algorithm = _.get(options, 'algorithm', 'HS256');
+  this.expiresInSeconds = _.get(options, 'expiresInSeconds');
 }
 
 exports = module.exports = SignedToken;
@@ -15,7 +16,11 @@ const jwt = require('jsonwebtoken');
 
 SignedToken.prototype.sign = function(payload) {
   return new Promise((resolve, reject) => {
-    jwt.sign(payload, this.signingKey, {algorithm: this.algorithm}, (err, signed) => err ? reject(err) : resolve(signed));
+    const signOptions = {algorithm: this.algorithm};
+    if (this.expiresInSeconds) {
+      signOptions.expiresIn = this.expiresInSeconds;
+    }
+    jwt.sign(payload, this.signingKey, signOptions, (err, signed) => err ? reject(err) : resolve(signed));
   })
   .then(signed => {
     this.signed = signed;

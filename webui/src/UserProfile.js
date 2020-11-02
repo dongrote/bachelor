@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'semantic-ui-react';
+import { Button, Card } from 'semantic-ui-react';
 
 export default props => (
   <Card>
@@ -10,6 +10,18 @@ export default props => (
     </Card.Content>
     <Card.Content extra>
       idk my bff jill
+    </Card.Content>
+    <Card.Content extra>
+      <Button
+        fluid
+        icon='sign-out'
+        labelPosition='left'
+        content='Sign Out'
+        onClick={async () => {
+          await fetch('/auth/logout');
+          props.onSignOut();
+        }}
+      />
     </Card.Content>
   </Card>
 );

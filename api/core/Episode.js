@@ -39,8 +39,7 @@ Episode.findById = async (accessToken, episodeId) => {
   return null;
 };
 
-Episode.prototype.awardRose = async function(accessToken, seasonCastMember) {
-  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, ['owner', 'member'])) throw new Error('permission denied');
+Episode.prototype.awardRose = async function(seasonCastMember) {
   await models.Rose
     .create({
       EpisodeId: this.id,
@@ -48,8 +47,7 @@ Episode.prototype.awardRose = async function(accessToken, seasonCastMember) {
     });
 };
 
-Episode.prototype.revokeRose = async function(accessToken, seasonCastMember) {
-  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, ['owner', 'member'])) throw new Error('permission denied');
+Episode.prototype.revokeRose = async function(seasonCastMember) {
   await models.Rose
     .destroy({
       where: {

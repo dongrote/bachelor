@@ -1,5 +1,6 @@
 'use strict';
 const HttpError = require('http-error-constructor'),
+  log = require('debug-logger')('auth:login'),
   core = require('../../core');
 
 exports = module.exports = async (req, res, next) => {
@@ -11,6 +12,7 @@ exports = module.exports = async (req, res, next) => {
     }
     res.sendStatus(user ? 204 : 400);
   } catch (e) {
+    log.error(e);
     next(new HttpError(400, e.message));
   }
 };

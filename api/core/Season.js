@@ -9,6 +9,7 @@ function Season(seasonData) {
 }
 exports = module.exports = Season;
 const _ = require('lodash'),
+  log = require('debug-logger')('Season'),
   {MissingMembershipError, MissingRoleError} = require('./rbac'),
   ResourceGroup = require('./ResourceGroup'),
   Episode = require('./Episode'),
@@ -31,9 +32,23 @@ Season.create = async (accessToken, details) => {
 };
 
 Season.findAll = async (accessToken, options) => {
-  const seasons = _.filter(await Promise.all(accessToken.groups().map(async g => await Season.findByResourceGroupId(accessToken, g.id)), s => s !== null));
+  return accessToken.isAdmin()
+    ? await Season.findAllForAdmin(accessToken, options)
+    : await Season.findAllForUser(accessToken, options);
+};
+
+Season.findAllForAdmin = async (accessToken, options) => {
+  const {count, rows} = await models.Season.findAndCountAll({include: [models.ResourceGroup]});
+  return {count, seasons: rows.map(r => new Season(r.toJSON()))};
+};
+
+Season.findAllForUser = async (accessToken, options) => {
+  log.info('findAll:accessToken', accessToken);
+  log.info('findAll:accessToken.groupIds', accessToken.groupIds());
+  const seasons = _.filter(await Promise.all(accessToken.groupIds().map(async groupId => await Season.findByResourceGroupId(accessToken, groupId)), s => s !== null));
   return {count: seasons.length, seasons};
 };
+
 
 Season.findById = async (accessToken, seasonId) => {
   const season = await models.Season.findByPk(seasonId);
@@ -48,16 +63,22 @@ Season.findByResourceGroupId = async (accessToken, resourceGroupId) => {
   return season ? new Season(_.assignIn(season.toJSON(), {resourceGroup})) : null;
 };
 
-Season.prototype.createCastMember = function(accessToken, details) {
+Season.prototype.createCastMember = async function(accessToken, seasonCastMember) {
   const roles = ['owner', 'member'];
   if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
-  const seasonCastMember = await SeasonCastMember
+  return await SeasonCastMember
     .create({
       SeasonId: this.id,
-      firstName: _.get(details, 'firstName'),
-      lastName: _.get(details, 'lastName'),
+      firstName: _.get(seasonCastMember, 'firstName'),
+      lastName: _.get(seasonCastMember, 'lastName'),
     });
-  return seasonCastMember;
+};
+
+Season.prototype.findAllSeasonCastMembers = async function(accessToken) {
+  if (!accessToken.isMemberOfGroup(this.ResourceGroupId)) throw new MissingMembershipError(this.ResourceGroupId);
+  const {count, rows} = await models.SeasonCastMember
+    .findAll({where: {SeasonId: this.id}});
+  return {count, seasonCastMembers: rows.map(r => new SeasonCastMember(r.toJSON()))};
 };
 
 Season.prototype.addUserMember = async function(accessToken, user) {
@@ -88,4 +109,16 @@ Season.prototype.createEpisode = async function(accessToken, options) {
 
 Season.prototype.seasonCastMembers = async function(accessToken) {
   return await SeasonCastMember.findForSeason(accessToken, this);
+};
+
+Season.prototype.awardRose = async function(accessToken, episode, seasonCastMember) {
+  const roles = ['owner', 'member'];
+  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
+  await episode.awardRose(seasonCastMember);
+};
+
+Season.prototype.revokeRose = async function(accessToken, episode, seasonCastMember) {
+  const roles = ['owner', 'member'];
+  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
+  await episode.revokeRose(seasonCastMember);
 };

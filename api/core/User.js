@@ -1,6 +1,5 @@
 'use strict';
 function User(data) {
-  log.debug(data);
   this.dbrow = data;
   this.id = data.id;
   this.systemRole = data.systemRole || 'guest';
@@ -15,7 +14,6 @@ exports = module.exports = User;
 const log = require('debug-logger')('User'),
   rbac = require('./rbac'),
   models = require('../db/models'),
-  Season = require('./Season'),
   bcrypt = require('bcryptjs');
 
 User.hashPassword = async password => await bcrypt.hash(password, await bcrypt.genSalt());

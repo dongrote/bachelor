@@ -9,7 +9,13 @@ class CreateSeasonButton extends Component {
   }
   render() {
     return this.state.showForm
-      ? <CreateSeasonForm onCancel={() => this.toggleShowForm()}/>
+      ? <CreateSeasonForm
+          onCancel={() => this.toggleShowForm()}
+          onCreate={() => {
+            this.toggleShowForm();
+            this.props.onCreate();
+          }}
+        />
       : <Button
           fluid
           primary
