@@ -1,16 +1,16 @@
 'use strict';
+const _ = require('lodash');
 function Season(seasonData) {
   this.id = seasonData.id;
   this.ResourceGroupId = seasonData.ResourceGroupId;
   this.resourceGroup = seasonData.resourceGroup;
-  this.type = seasonData.type;
+  this.type = _.capitalize(seasonData.type);
   this.name = seasonData.name;
   this.startDate = seasonData.startedAt;
   this.endDate = seasonData.endedAt;
 }
 exports = module.exports = Season;
-const _ = require('lodash'),
-  log = require('debug-logger')('Season'),
+const log = require('debug-logger')('Season'),
   {MissingMembershipError, MissingRoleError} = require('./rbac'),
   ResourceGroup = require('./ResourceGroup'),
   Episode = require('./Episode'),
@@ -52,6 +52,7 @@ Season.findAllForUser = async (accessToken, options) => {
 
 Season.findById = async (accessToken, seasonId) => {
   const season = await models.Season.findByPk(seasonId);
+  log.info('findById:season', season);
   const resourceGroup = await ResourceGroup.findById(accessToken, season.ResourceGroupId);
   return new Season(_.assignIn(season.toJSON(), {resourceGroup}));
 };
@@ -74,11 +75,33 @@ Season.prototype.createCastMember = async function(accessToken, seasonCastMember
     });
 };
 
-Season.prototype.findAllSeasonCastMembers = async function(accessToken) {
+Season.prototype.castMembers = async function(accessToken) {
   if (!accessToken.isMemberOfGroup(this.ResourceGroupId)) throw new MissingMembershipError(this.ResourceGroupId);
   const {count, rows} = await models.SeasonCastMember
     .findAll({where: {SeasonId: this.id}});
   return {count, seasonCastMembers: rows.map(r => new SeasonCastMember(r.toJSON()))};
+};
+
+Season.prototype.userMembers = async function(accessToken) {
+  if (!accessToken.isMemberOfGroup(this.ResourceGroupId)) throw new MissingMembershipError(this.ResourceGroupId);
+  const {count, rows} = await models.User
+    .findAndCountAll({
+      attributes: ['id', 'displayName'],
+      include: [{
+        model: models.ResourceGroupRoleBinding,
+        required: true,
+        include: [{
+          model: models.ResourceGroupRole,
+          attributes: ['name'],
+          where: {id: this.ResourceGroupId},
+        }],
+      }]
+    });
+  return {count, members: rows.map(r => ({
+    id: r.id,
+    displayName: r.displayName,
+    role: _.get(_.first(r.ResourceGroupRoleBindings), 'ResourceGroupRole.name', 'error'),
+  }))};
 };
 
 Season.prototype.addUserMember = async function(accessToken, user) {
@@ -105,10 +128,6 @@ Season.prototype.createEpisode = async function(accessToken, options) {
   const {title} = _.pick(options, ['title']),
     episodeNumber = await this.nextEpisodeNumber(accessToken);
   return await Episode.create(accessToken, this, {episodeNumber, title});
-};
-
-Season.prototype.seasonCastMembers = async function(accessToken) {
-  return await SeasonCastMember.findForSeason(accessToken, this);
 };
 
 Season.prototype.awardRose = async function(accessToken, episode, seasonCastMember) {

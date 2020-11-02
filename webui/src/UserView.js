@@ -3,7 +3,6 @@ import { Grid } from 'semantic-ui-react';
 import UserProfile from './UserProfile';
 import CreateSeasonButton from './CreateSeasonButton';
 import SeasonCard from './SeasonCard';
-import ResourceGroupCard from './ResourceGroupCard';
 
 export default props => (
   <Grid>
@@ -28,17 +27,6 @@ export default props => (
             name={s.name}
             role={s.role}
             description={s.description}
-          />
-        </Grid.Column>
-      </Grid.Row>
-    ))}
-    {props.groups && props.groups.map(g => (
-      <Grid.Row columns={1}>
-        <Grid.Column>
-          <ResourceGroupCard
-            name={g.name}
-            role={g.role}
-            description={g.description}
           />
         </Grid.Column>
       </Grid.Row>

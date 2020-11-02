@@ -9,21 +9,19 @@ exports = module.exports = async (req, res, next) => {
   const {AccessToken} = auth;
   const accessTokenCookie = req.cookies[AccessToken.cookieName()];
   let error;
-  try {
-    if (accessTokenCookie) {
-      req.accessToken = await AccessToken.verify(accessTokenCookie, env.tokenSigningKey(), {algorithm: env.tokenSigningAlgorithm()});
-    } else if (req.refreshToken) {
-      req.accessToken = await AccessToken.create(await User.findById(req.refreshToken.userId()));
-      res.cookie(req.accessToken.cookieName(), req.accessToken.cookieValue(), {httpOnly: true});
-    }
-  } catch (e) {
-    log.error(e);
+  if (accessTokenCookie) {
     try {
-      req.accessToken = await AccessToken.create(await User.findById(req.refreshToken.userId()));
-      return res.cookie(req.accessToken.cookieName(), req.accessToken.cookieValue(), {httpOnly: true});
-    } catch (refreshError) {
-      res.clearCookie(AccessToken.cookieName(), {httpOnly: true});
-      error = new HttpError(400, refreshError.message);
+      req.accessToken = await AccessToken.verify(accessTokenCookie, env.tokenSigningKey(), {algorithm: env.tokenSigningAlgorithm()});
+    } catch (e) {
+      if (req.refreshToken) {
+        log.info('refreshing access token');
+        req.accessToken = await AccessToken.create(await User.findById(req.refreshToken.userId()));
+        res.cookie(req.accessToken.cookieName(), req.accessToken.cookieValue(), {httpOnly: true});
+      } else {
+        log.error(e);
+        res.clearCookie(AccessToken.cookieName(), {httpOnly: true});
+        error = new HttpError(400, e.message);
+      }
     }
   }
   setImmediate(next, error);
