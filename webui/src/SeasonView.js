@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid } from 'semantic-ui-react';
+import { Button, Card, Placeholder } from 'semantic-ui-react';
 
 class SeasonView extends Component {
   state = {season: null};
@@ -15,8 +15,20 @@ class SeasonView extends Component {
   }
   render() {
     return this.state.season
-      ? (<Grid>Loading ...</Grid>)
-      : (<Grid>SeasonId: {this.state.season.id}</Grid>);
+      ? (
+        <Card fluid>
+          <Card.Content>
+            <Card.Header>{this.state.season.name}</Card.Header>
+            <Card.Description>SeasonID {this.state.season.id}</Card.Description>
+          </Card.Content>
+          <Card.Content extra>
+            <Button fluid icon='arrow alternate circle left' labelPosition='left' content='Back' onClick={() => this.props.onHide()}/>
+          </Card.Content>
+        </Card>
+      )
+      : (<Placeholder>
+        <Placeholder.Paragraph />
+      </Placeholder>);
   }  
 }
 

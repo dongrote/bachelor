@@ -15,7 +15,7 @@ export default props => (
       <Button
         fluid
         icon='sign-out'
-        labelPosition='left'
+        labelPosition='right'
         content='Sign Out'
         onClick={async () => {
           await fetch('/auth/logout');

@@ -24,6 +24,7 @@ export default props => (
       <Grid.Row columns={1}>
         <Grid.Column>
           <SeasonCard
+            seasonId={s.id}
             name={s.name}
             role={s.role}
             description={s.description}

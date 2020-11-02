@@ -4,6 +4,7 @@ function Season(seasonData) {
   this.ResourceGroupId = seasonData.ResourceGroupId;
   this.resourceGroup = seasonData.resourceGroup;
   this.type = seasonData.type;
+  this.name = seasonData.name;
   this.startDate = seasonData.startedAt;
   this.endDate = seasonData.endedAt;
 }
@@ -48,7 +49,6 @@ Season.findAllForUser = async (accessToken, options) => {
   const seasons = _.filter(await Promise.all(accessToken.groupIds().map(async groupId => await Season.findByResourceGroupId(accessToken, groupId)), s => s !== null));
   return {count: seasons.length, seasons};
 };
-
 
 Season.findById = async (accessToken, seasonId) => {
   const season = await models.Season.findByPk(seasonId);

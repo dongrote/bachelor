@@ -23,7 +23,7 @@ class App extends Component {
     const res = await fetch('/api/seasons');
     if (res.ok) {
       const json = await res.json();
-      this.setState({season: json.seasons});
+      this.setState({seasons: json.seasons});
     }
   }
 

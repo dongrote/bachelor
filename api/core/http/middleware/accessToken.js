@@ -20,11 +20,11 @@ exports = module.exports = async (req, res, next) => {
     log.error(e);
     try {
       req.accessToken = await AccessToken.create(await User.findById(req.refreshToken.userId()));
-      res.cookie(req.accessToken.cookieName(), req.accessToken.cookieValue(), {httpOnly: true});
+      return res.cookie(req.accessToken.cookieName(), req.accessToken.cookieValue(), {httpOnly: true});
     } catch (refreshError) {
-      return next(new HttpError(400, refreshError.message));
+      res.clearCookie(AccessToken.cookieName(), {httpOnly: true});
+      error = new HttpError(400, refreshError.message);
     }
-    error = new HttpError(400, e.message);
   }
-  next(error);
+  setImmediate(next, error);
 };

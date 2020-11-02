@@ -5,7 +5,7 @@ import SeasonView from './SeasonView';
 class SeasonCard extends Component {
   state = {showCard: true};
   render() {
-    return this.showCard
+    return this.state.showCard
       ? (
         <Card fluid onClick={() => this.setState({showCard: false})}>
           <Card.Content>
@@ -15,7 +15,7 @@ class SeasonCard extends Component {
           </Card.Content>
         </Card>
       )
-      : <SeasonView seasonId={this.props.seasonId} />;
+      : <SeasonView seasonId={this.props.seasonId} onHide={() => this.setState({showCard: true})}/>;
   }
 }
 
