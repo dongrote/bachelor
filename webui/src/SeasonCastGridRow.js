@@ -31,7 +31,7 @@ class SeasonCastGridRow extends Component {
           />)}
         </Grid.Column>
       </Grid.Row>
-      {this.props.role === 'owner' && <Grid.Row>
+      {(this.props.role === 'owner' || this.props.role === 'member') && <Grid.Row>
         <Grid.Column>
           <AddCastMemberButton
             seasonId={this.props.seasonId}

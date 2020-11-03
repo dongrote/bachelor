@@ -29,7 +29,7 @@ Season.create = async (accessToken, details) => {
       endedAt: endDate,
       ResourceGroupId: resourceGroup.id,
     });
-  return dbrow ? new Season(_.assignIn(dbrow.toJSON(), {resourceGroup})) : null;
+    return dbrow ? new Season(_.assignIn(dbrow.toJSON(), {resourceGroup})) : null;
 };
 
 Season.findAll = async (accessToken, options) => {
