@@ -1,7 +1,11 @@
 'use strict';
 exports = module.exports = require('express').Router();
 const create = require('./create'),
-  profile = require('./profile');
+  findAll = require('./findAll'),
+  profile = require('./profile'),
+  updateProfile = require('./updateProfile');
 
 exports.post('/', create);
+exports.get('/', findAll);
 exports.get('/profile', profile);
+exports.patch('/profile', updateProfile);

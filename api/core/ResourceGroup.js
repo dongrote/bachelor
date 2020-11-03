@@ -41,10 +41,14 @@ ResourceGroup.prototype.findRole = async function(accessToken, roleName) {
   return await ResourceGroupRole.findByName(accessToken, this, roleName);
 };
 
+ResourceGroup.prototype.createRole = async function(accessToken, name, details) {
+  return await ResourceGroupRole.create(accessToken, this, name, details);
+};
+
 ResourceGroup.prototype.bindUserRole = async function(accessToken, user, resourceGroupRole) {
   if (!accessToken.hasGroupRole(this.id, 'owner')) throw new MissingRoleError('owner');
   await models.ResourceGroupRoleBinding
-    .findOrCreate({UserId: user.id, ResourceGroupRoleId: resourceGroupRole.id});
+    .findOrCreate({where: {UserId: user.id, ResourceGroupRoleId: resourceGroupRole.id}});
 };
 
 ResourceGroup.prototype.unbindUserRole = async function(accessToken, user, resourceGroupRole) {
@@ -55,4 +59,6 @@ ResourceGroup.prototype.unbindUserRole = async function(accessToken, user, resou
 
 ResourceGroup.prototype.userRoles = async function(accessToken) {
   if (!accessToken.isMemberOfGroup(this.id)) throw new MissingMembershipError(this.id);
+  const roles = await models.ResourceGroupRole.findAll({where: {ResourceGroupId: this.id}});
+  return roles.map(r => new ResourceGroupRole(r));
 };

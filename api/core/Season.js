@@ -68,17 +68,19 @@ Season.prototype.createCastMember = async function(accessToken, seasonCastMember
   const roles = ['owner', 'member'];
   if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
   return await SeasonCastMember
-    .create({
-      SeasonId: this.id,
+    .create(this, {
       firstName: _.get(seasonCastMember, 'firstName'),
       lastName: _.get(seasonCastMember, 'lastName'),
+      age: _.get(seasonCastMember, 'age'),
+      occupation: _.get(seasonCastMember, 'occupation'),
+      gender: _.get(seasonCastMember, 'gender'),
     });
 };
 
 Season.prototype.castMembers = async function(accessToken) {
   if (!accessToken.isMemberOfGroup(this.ResourceGroupId)) throw new MissingMembershipError(this.ResourceGroupId);
   const {count, rows} = await models.SeasonCastMember
-    .findAll({where: {SeasonId: this.id}});
+    .findAndCountAll({where: {SeasonId: this.id}});
   return {count, seasonCastMembers: rows.map(r => new SeasonCastMember(r.toJSON()))};
 };
 
@@ -92,8 +94,12 @@ Season.prototype.userMembers = async function(accessToken) {
         required: true,
         include: [{
           model: models.ResourceGroupRole,
+          required: true,
           attributes: ['name'],
-          where: {id: this.ResourceGroupId},
+          include: [{
+            model: models.ResourceGroup,
+            where: {id: this.ResourceGroupId},
+          }]
         }],
       }]
     });
@@ -102,6 +108,14 @@ Season.prototype.userMembers = async function(accessToken) {
     displayName: r.displayName,
     role: _.get(_.first(r.ResourceGroupRoleBindings), 'ResourceGroupRole.name', 'error'),
   }))};
+};
+
+Season.prototype.roles = async function(accessToken) {
+  return await this.resourceGroup.userRoles(accessToken);
+};
+
+Season.prototype.createRole = async function(accessToken, name, details) {
+  return await this.resourceGroup.createRole(accessToken, name, details);
 };
 
 Season.prototype.addUserMember = async function(accessToken, user) {

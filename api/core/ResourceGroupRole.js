@@ -1,6 +1,7 @@
 'use strict';
 function ResourceGroupRole(data) {
   this.id = data.id;
+  this.ResourceGroupId = data.ResourceGroupId;
   this.name = data.name;
   this.description = data.description;
 }
@@ -13,25 +14,23 @@ const _ = require('lodash'),
 
 ResourceGroupRole.createInitialOwner = async (accessToken, resourceGroup) => {
   const resourceGroupRole = await models.ResourceGroupRole
-  .create({
-    ResourceGroupId: resourceGroup.id,
-    name: 'owner',
-    description: 'Group Owner',
-  });
-await models.ResourceGroupRoleBinding
-  .create({
-    UserId: accessToken.userId(),
-    ResourceGroupRoleId: resourceGroupRole.id,
-  });
+    .create({
+      ResourceGroupId: resourceGroup.id,
+      name: 'owner',
+      description: 'Group Owner',
+    });
+  await models.ResourceGroupRoleBinding
+    .create({
+      UserId: accessToken.userId(),
+      ResourceGroupRoleId: resourceGroupRole.id,
+    });
 };
 
 ResourceGroupRole.create = async (accessToken, resourceGroup, name, options) => {
   if (!accessToken.hasGroupRole(resourceGroup.id, 'owner')) throw new MissingRoleError('owner');
-  const [row] = await models.ResourceGroupRole
-    .findOrCreate({
-      name,
-      description: _.get(options, 'description'),
-    });
+  const where = {name, ResourceGroupId: resourceGroup.id};
+  if (_.has(options, 'description')) where.description = options.description;
+  const [row] = await models.ResourceGroupRole.findOrCreate({where});
   return row ? new ResourceGroupRole(row) : null;
 };
 

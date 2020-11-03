@@ -23,7 +23,16 @@ class App extends Component {
     const res = await fetch('/api/seasons');
     if (res.ok) {
       const json = await res.json();
-      this.setState({seasons: json.seasons});
+      const seasons = json.seasons.map(s => ({
+        id: s.id,
+        ResourceGroupId: s.ResourceGroupId,
+        type: s.type,
+        name: s.name,
+        startDate: s.startDate,
+        endDate: s.endDate,
+        role: this.state.user.groups.find(g => g.id === s.ResourceGroupId).role,
+      }));
+      this.setState({seasons});
     }
   }
 

@@ -1,6 +1,5 @@
 'use strict';
 function User(data) {
-  this.dbrow = data;
   this.id = data.id;
   this.systemRole = data.systemRole || 'guest';
   this.username = data.username;
@@ -11,7 +10,8 @@ function User(data) {
 }
 
 exports = module.exports = User;
-const log = require('debug-logger')('User'),
+const _ = require('lodash'),
+  log = require('debug-logger')('User'),
   rbac = require('./rbac'),
   models = require('../db/models'),
   bcrypt = require('bcryptjs');
@@ -31,6 +31,23 @@ User.create = async (username, password, systemRole) => {
     log.error('create', e);
     return null;
   }
+};
+
+User.findAll = async options => {
+  const {count, rows} = await models.User
+    .findAndCountAll({
+      attributes: {exclude: ['passwordHash']},
+      include: [{
+        model: models.ResourceGroupRoleBinding,
+        include: [{
+          model: models.ResourceGroupRole,
+          include: [models.ResourceGroup]
+        }]
+      }],
+      offset: _.get(options, 'offset', 0),
+      limit: _.get(options, 'limit', 100),
+    });
+  return {count, users: rows.map(r => new User(r))};
 };
 
 User.findById = async userId => {
@@ -68,10 +85,16 @@ User.prototype.profile = function() {
     username: this.username,
     systemRole: this.systemRole,
     groups: this.ResourceGroupRoleBindings.map(rgrb => ({
+      id: rgrb.ResourceGroupRole.ResourceGroup.id,
       name: rgrb.ResourceGroupRole.ResourceGroup.name,
       role: rgrb.ResourceGroupRole.name,
       roleDescription: rgrb.ResourceGroupRole.description,
       description: rgrb.ResourceGroupRole.ResourceGroup.description,
     })),
   };
+};
+
+User.prototype.update = async function(accessToken, values) {
+  if (accessToken.userId() !== this.id && !accessToken.isAdmin()) throw new Error('permission denied');
+  await models.User.update(values, {where: {id: this.id}});
 };
