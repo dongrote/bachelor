@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     occupation: DataTypes.STRING(50),
     gender: DataTypes.STRING(1),
     homeLocation: DataTypes.STRING,
+    imageFilename: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'SeasonCastMember',

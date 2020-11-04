@@ -4,6 +4,7 @@ COPY api/package.json .
 RUN npm i
 
 FROM node:12-alpine
+RUN mkdir -p /var/run/assets/images
 RUN apk add openssl
 WORKDIR /usr/src/app
 COPY api/ .
