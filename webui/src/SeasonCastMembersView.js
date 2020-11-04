@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Grid } from 'semantic-ui-react';
+import io from './websocket';
+import { uid } from 'uid';
 import AddCastMemberButton from './AddCastMemberButton';
 import SeasonCastMemberCard from './SeasonCastMemberCard';
 
@@ -12,8 +14,25 @@ class SeasonCastMembersView extends Component {
       this.setState({cast: json.seasonCastMembers});
     }
   }
+  async handleSeasonCastMemberCreateEvent(event) {
+    if (event.SeasonId === this.props.seasonId) {
+      await this.fetchCastMembers();
+    }
+  }
   async componentDidMount() {
+    this.instanceId = uid();
+    const eventHandler = event => this.handleSeasonCastMemberCreateEvent(event);
+    eventHandler.instance = this.instanceId;
+    io.on('SeasonCastMember.create', eventHandler);
     await this.fetchCastMembers();
+  }
+  removeEventHandler(event) {
+    io.listeners(event)
+      .filter(l => l.instance === this.instanceId)
+      .forEach(l => io.off(event, l));
+  }
+  componentWillUnmount() {
+    this.removeEventHandler('SeasonCastMember.create');
   }
   render() {
     return (
@@ -41,7 +60,7 @@ class SeasonCastMembersView extends Component {
         {this.props.role === 'owner' && (
           <Grid.Row>
             <Grid.Column>
-              <AddCastMemberButton seasonId={this.props.seasonId} onCreate={() => this.fetchCastMembers()} />
+              <AddCastMemberButton seasonId={this.props.seasonId} onCreate={() => console.log('noop')} />
             </Grid.Column>
           </Grid.Row>
         )}

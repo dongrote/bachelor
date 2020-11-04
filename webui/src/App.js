@@ -20,12 +20,7 @@ class App extends Component {
   }
 
   async componentDidMount() {
-    // register io handlers
     await this.fetchUserProfile();
-  }
-
-  componentWillUnmount() {
-    // unregister io handlers
   }
 
   async onSignIn() {

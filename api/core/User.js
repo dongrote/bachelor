@@ -12,6 +12,7 @@ function User(data) {
 exports = module.exports = User;
 const _ = require('lodash'),
   log = require('debug-logger')('User'),
+  websocket = require('./websocket'),
   rbac = require('./rbac'),
   models = require('../db/models'),
   bcrypt = require('bcryptjs');
@@ -97,4 +98,5 @@ User.prototype.profile = function() {
 User.prototype.update = async function(accessToken, values) {
   if (accessToken.userId() !== this.id && !accessToken.isAdmin()) throw new Error('permission denied');
   await models.User.update(values, {where: {id: this.id}});
+  websocket.emit('User.update', await User.findById(this.id));
 };

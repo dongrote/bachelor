@@ -3,34 +3,15 @@ import { Button, Card, Grid, Header } from 'semantic-ui-react';
 import EligibleCastMemberCard from './EligibleCastMemberCard';
 
 class EpisodeDetails extends Component {
-  state = {roseCount: 0, bachelorCount: 0, eligibleCast: []};
+  state = {roseCount: 0, bachelorCount: 0, eligibleCastIds: [], eligibleCastNames: []};
   async fetchEligibleCastMembers() {
     const res = await fetch(`/api/seasons/${this.props.seasonId}/episodes/${this.props.episodeNumber}/eligible`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({eligibleCast: json});
-    }
-  }
-
-  async awardRose(castMemberId) {
-    const res = await fetch(`/api/seasons/${this.props.seasonId}/episodes/${this.props.episodeNumber}/rose`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({castMemberId})
-    });
-    if (res.ok) {
-      await this.fetchEligibleCastMembers();
-    }
-  }
-
-  async revokeRose(castMemberId) {
-    const res = await fetch(`/api/seasons/${this.props.seasonId}/episodes/${this.props.episodeNumber}/rose`, {
-      method: 'DELETE',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({castMemberId})
-    });
-    if (res.ok) {
-      await this.fetchEligibleCastMembers();
+      this.setState({
+        eligibleCastIds: json.map(j => j.id),
+        eligibleCastNames: json.map(j => j.firstName),
+      });
     }
   }
 
@@ -56,10 +37,12 @@ class EpisodeDetails extends Component {
           </Card.Header>
         </Card.Content>
         <Card.Content extra>
-          {this.state.eligibleCast.map(c => <EligibleCastMemberCard
-            firstName={c.firstName}
-            hasRose={c.hasRose}
-            onClick={() => c.hasRose ? this.revokeRose(c.id) : this.awardRose(c.id)}
+          {this.state.eligibleCastIds.map((c, i) => <EligibleCastMemberCard
+            key={i}
+            seasonId={this.props.seasonId}
+            episodeNumber={this.props.episodeNumber}
+            castMemberId={c}
+            firstName={this.state.eligibleCastNames[i]}
           />)}
         </Card.Content>
       </Card>

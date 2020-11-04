@@ -11,6 +11,7 @@ function Episode(data) {
 
 exports = module.exports = Episode;
 const _ = require('lodash'),
+  log = require('debug-logger')('Episode'),
   models = require('../db/models'),
   {Op} = models.Sequelize,
   SeasonCastMember = require('./SeasonCastMember');
@@ -58,6 +59,15 @@ Episode.findAllForSeason = async (season, options) => {
   return {count, episodes: rows.map(r => new Episode(r.toJSON()))};
 };
 
+Episode.prototype.roses = async function() {
+  const roses = await models.Rose
+    .findAll({
+      where: {EpisodeId: this.id},
+      include: [models.SeasonCastMember],
+    });
+  return roses.map(r => r.toJSON());
+};
+
 Episode.prototype.awardRose = async function(seasonCastMember) {
   await models.Rose
     .create({
@@ -87,6 +97,7 @@ Episode.prototype.castMembers = async function(season) {
 };
 
 Episode.prototype.eligibleCastMembers = async function(season) {
+  log.info('eligibleCastMembers season', season);
   if (this.number === 1) {
     return await this.castMembers(season);
   }
