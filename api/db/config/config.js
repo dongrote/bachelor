@@ -5,6 +5,7 @@ exports = module.exports = {
     dialect: 'sqlite',
     storage: env.sqliteDatabasePath(),
     seederStorage: 'sequelize',
+    logging: () => null,
   },
   test: {
     dialect: 'sqlite',

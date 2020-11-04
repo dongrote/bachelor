@@ -8,6 +8,8 @@ function Season(seasonData) {
   this.name = seasonData.name;
   this.startDate = seasonData.startedAt;
   this.endDate = seasonData.endedAt;
+  this.pickingLocked = seasonData.pickingLocked || false;
+  this.pickLimit = seasonData.pickLimit;
 }
 exports = module.exports = Season;
 const log = require('debug-logger')('Season'),
@@ -132,7 +134,7 @@ Season.prototype.createRole = async function(accessToken, name, details) {
 Season.prototype.addUserMember = async function(accessToken, user) {
   const resourceGroupRole = await this.resourceGroup.findRole(accessToken, 'member');
   await this.resourceGroup.bindUserRole(accessToken, user, resourceGroupRole);
-  websocket.emit('SeasonUserMembers.update', await this.userMembers());
+  websocket.emit('SeasonUserMembers.update', await this.userMembers(accessToken));
 };
 
 Season.prototype.removeUserMember = async function(accessToken, user) {
@@ -189,4 +191,59 @@ Season.prototype.revokeRose = async function(accessToken, episode, seasonCastMem
   await episode.revokeRose(seasonCastMember);
   websocket.emit('Rose.destroy', {episode, seasonCastMember});
   websocket.emit('EligibleCastMembers.update', {SeasonId: this.id, episodeNumber: episode.number, castMembers: await episode.eligibleCastMembers(this)});
+};
+
+Season.prototype.userMayPick = async function(accessToken) {
+  const roles = ['owner', 'member'];
+  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) return false;
+  if (this.pickingLocked) return false;
+  const pickCount = await models.SeasonCastMemberPicks.count({where: {SeasonId: this.id, UserId: accessToken.userId()}});
+  return pickCount < this.pickLimit;
+};
+
+Season.prototype.createPick = async function(accessToken, seasonCastMember) {
+  if (await this.userMayPick(accessToken)) {
+    return await models.SeasonCastMemberPicks
+      .findOrCreate({
+        where: {
+          SeasonId: this.id,
+          UserId: accessToken.userId(),
+          SeasonCastMemberId: seasonCastMember.id,
+        }
+      });
+  }
+  throw new Error('picking not permitted');
+};
+
+Season.prototype.destroyPick = async function(accessToken, seasonCastMember) {
+  const roles = ['owner', 'member'];
+  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
+  if (this.pickingLocked) throw new Error('picking locked');
+  await models.SeasonCastMemberPicks
+    .destroy({
+      where: {
+        SeasonId: this.id,
+        UserId: accessToken.userId(),
+        SeasonCastMemberId: seasonCastMember.id,
+      }
+    });
+};
+
+Season.prototype.picks = async function(accessToken) {
+  const roles = ['owner', 'member'];
+  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
+  const picks = await models.SeasonCastMemberPicks
+    .findAll({
+      where: {SeasonId: this.id, UserId: accessToken.userId()},
+      include: [models.SeasonCastMember],
+    });
+  return picks.map(p => p.toJSON());
+};
+
+Season.prototype.availablePicks = async function(accessToken) {
+  const roles = ['owner', 'member'];
+  if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
+  const {seasonCastMembers} = await this.castMembers(accessToken);
+  const currentPicks = await this.picks(accessToken);
+  return _.filter(seasonCastMembers, castMember => -1 === _.findIndex(currentPicks, pick => pick.SeasonCastMember.id === castMember.id));
 };

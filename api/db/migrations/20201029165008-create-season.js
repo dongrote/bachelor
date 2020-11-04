@@ -27,6 +27,14 @@ module.exports = {
       endedAt: {
         type: Sequelize.DATE
       },
+      pickLimit: {
+        type: Sequelize.INTEGER,
+        defaultValue: 10
+      },
+      pickingLocked: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -3,6 +3,7 @@ import { Segment, Header, Button, Grid, Placeholder, Tab } from 'semantic-ui-rea
 import SeasonDetailsView from './SeasonDetailsView';
 import SeasonEpisodesView from './SeasonEpisodesView';
 import SeasonCastMembersView from './SeasonCastMembersView';
+import SeasonCastMemberPickSelector from './SeasonCastMemberPickSelector';
 import SeasonFriendsView from './SeasonFriendsView';
 
 class SeasonView extends Component {
@@ -47,8 +48,9 @@ class SeasonView extends Component {
           </Grid>
           <Tab panes={[
             {menuItem: {key: 'details', icon: 'file alternate outline'}, render: () => <SeasonDetailsView seasonId={this.props.seasonId} role={this.props.role} ResourceGroupId={this.props.ResourceGroupId} />},
-            {menuItem: {key: 'episodes', icon: 'tasks'}, render: () => <SeasonEpisodesView seasonId={this.props.seasonId} role={this.props.role} ResourceGroupId={this.props.ResourceGroupId} />},
+            {menuItem: {key: 'episodes', icon: 'tv'}, render: () => <SeasonEpisodesView seasonId={this.props.seasonId} role={this.props.role} ResourceGroupId={this.props.ResourceGroupId} />},
             {menuItem: {key: 'cast', icon: 'address card outline'}, render: () => <SeasonCastMembersView seasonId={this.props.seasonId} role={this.props.role} ResourceGroupId={this.props.ResourceGroupId} />},
+            {menuItem: {key: 'picks', icon: 'tasks'}, render: () => <SeasonCastMemberPickSelector seasonId={this.props.seasonId} role={this.props.role} ResourceGroupId={this.props.ResourceGroupId} />},
             {menuItem: {key: 'friends', icon: 'users'}, render: () => <SeasonFriendsView seasonId={this.props.seasonId} role={this.props.role} ResourceGroupId={this.props.ResourceGroupId} />},
           ]} />
         </Segment>
