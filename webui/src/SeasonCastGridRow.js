@@ -24,6 +24,7 @@ class SeasonCastGridRow extends Component {
         <Grid.Column>
           <Header content='Cast Members' />
           {this.state.cast.map(c => <SeasonCastMemberCard
+            seasonCastMemberId={c.id}
             firstName={c.firstName}
             lastName={c.lastName}
             age={c.age}

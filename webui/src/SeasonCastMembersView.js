@@ -48,6 +48,8 @@ class SeasonCastMembersView extends Component {
           <Grid.Row>
             <Grid.Column>
               <SeasonCastMemberCard
+                role={this.props.role}
+                seasonCastMemberId={c.id}
                 firstName={c.firstName}
                 lastName={c.lastName}
                 age={c.age}

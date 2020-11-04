@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Header, Icon } from 'semantic-ui-react';
+import { Grid, Header, Icon, Image } from 'semantic-ui-react';
 
 class SeasonCastMemberPickSelector extends Component {
   state = {castMembers: [], picksLeft: null};
@@ -81,6 +81,7 @@ class SeasonCastMemberPickSelector extends Component {
         {this.state.castMembers.map((castMember, i) => (
           <Grid.Row key={i} columns={2}>
             <Grid.Column>
+              <Image circular avatar src={`/api/cast/${castMember.id}/photo`} />
               {castMember.firstName} (Roses: {castMember.roseCount})
             </Grid.Column>
             <Grid.Column textAlign='right'>
