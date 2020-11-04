@@ -44,15 +44,12 @@ Season.findAllForAdmin = async (accessToken, options) => {
 };
 
 Season.findAllForUser = async (accessToken, options) => {
-  log.info('findAll:accessToken', accessToken);
-  log.info('findAll:accessToken.groupIds', accessToken.groupIds());
   const seasons = _.filter(await Promise.all(accessToken.groupIds().map(async groupId => await Season.findByResourceGroupId(accessToken, groupId)), s => s !== null));
   return {count: seasons.length, seasons};
 };
 
 Season.findById = async (accessToken, seasonId) => {
   const season = await models.Season.findByPk(seasonId);
-  log.info('findById:season', season);
   const resourceGroup = await ResourceGroup.findById(accessToken, season.ResourceGroupId);
   return new Season(_.assignIn(season.toJSON(), {resourceGroup}));
 };
@@ -129,7 +126,7 @@ Season.prototype.removeUserMember = async function(accessToken, user) {
 };
 
 Season.prototype.episodeCount = async function(accessToken) {
-  if (!accessToken.isMemberOfGroup(this.resourceGroup.id)) throw new MissingMembershipError(resourceGroup.id);
+  if (!accessToken.isMemberOfGroup(this.resourceGroup.id)) throw new MissingMembershipError(this.resourceGroup.id);
   return await models.Episode.count({where: {SeasonId: this.id}});
 };
 
@@ -138,10 +135,26 @@ Season.prototype.nextEpisodeNumber = async function(accessToken) {
   return episodeCount + 1;
 };
 
+Season.prototype.episodes = async function(accessToken, options) {
+  if (!accessToken.isMemberOfGroup(this.resourceGroup.id)) throw new MissingMembershipError(this.resourceGroup.id);
+  return await Episode.findAllForSeason(this);
+};
+
+Season.prototype.episode = async function(accessToken, episodeNumber) {
+  if (!accessToken.isMemberOfGroup(this.resourceGroup.id)) throw new MissingMembershipError(this.resourceGroup.id);
+  return await Episode.findByNumber(this, episodeNumber);
+};
+
 Season.prototype.createEpisode = async function(accessToken, options) {
+  if (!accessToken.hasGroupRole(this.ResourceGroupId, 'owner')) throw new MissingRoleError('owner');
   const {title} = _.pick(options, ['title']),
     episodeNumber = await this.nextEpisodeNumber(accessToken);
-  return await Episode.create(accessToken, this, {episodeNumber, title});
+  return await Episode.create(this, {episodeNumber, title});
+};
+
+Season.prototype.eligibleCastMembers = async function(accessToken, episode) {
+  if (!accessToken.isMemberOfGroup(this.resourceGroup.id)) throw new MissingMembershipError(this.resourceGroup.id);
+  return await episode.eligibleCastMembers(this);
 };
 
 Season.prototype.awardRose = async function(accessToken, episode, seasonCastMember) {

@@ -17,6 +17,9 @@ class SeasonCard extends Component {
       )
       : <SeasonView
           seasonId={this.props.seasonId}
+          seasonName={this.props.name}
+          seasonDescription={this.props.description}
+          seasonType={this.props.type}
           ResourceGroupId={this.props.ResourceGroupId}
           role={this.props.role}
           onHide={() => this.setState({showCard: true})}

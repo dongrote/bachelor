@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       models.Episode.belongsTo(models.Season);
+      models.Episode.hasMany(models.Rose);
     }
   };
   Episode.init({

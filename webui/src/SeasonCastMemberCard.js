@@ -8,6 +8,9 @@ export default props => (
       <Card.Description>
         <p>Age: {props.age}</p>
         <p>Occupation: {props.occupation}</p>
+        {props.home && (
+          <p>{props.home}</p>
+        )}
       </Card.Description>
     </Card.Content>
   </Card>

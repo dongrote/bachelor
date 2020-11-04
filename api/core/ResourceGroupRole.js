@@ -43,8 +43,8 @@ ResourceGroupRole.findAll = async (accessToken, resourceGroup) => {
 
 ResourceGroupRole.findByName = async (accessToken, resourceGroup, role) => {
   if (!accessToken.isMemberOfGroup(resourceGroup.id)) throw new MissingMembershipError(resourceGroup.id);
-  const dbRow = await models.ResourceGroupRole
-    .findOne({
+  const [dbRow] = await models.ResourceGroupRole
+    .findOrCreate({
       where: {
         ResourceGroupId: resourceGroup.id,
         name: role,

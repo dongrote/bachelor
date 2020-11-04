@@ -7,6 +7,7 @@ function SeasonCastMember(data) {
   this.age = data.age;
   this.occupation = data.occupation;
   this.gender = data.gender;
+  this.homeLocation = data.homeLocation;
 }
 
 exports = module.exports = SeasonCastMember;
@@ -22,6 +23,13 @@ SeasonCastMember.create = async (season, details) => {
       occupation: _.get(details, 'occupation'),
       age: _.get(details, 'age'),
       gender: _.get(details, 'gender'),
+      homeLocation: _.get(details, 'homeLocation'),
     });
   return dbrow ? new SeasonCastMember(dbrow.toJSON()) : null;
+};
+
+SeasonCastMember.findById = async seasonCastMemberId => {
+  const dbrow = await models.SeasonCastMember
+    .findByPk(seasonCastMemberId);
+  return dbrow ? new SeasonCastMember(dbrow) : null;
 };

@@ -1,11 +1,21 @@
 import React, { Component } from 'react';
 import { Form, Grid, Button, Radio } from 'semantic-ui-react';
+import SubmitButton from './SubmitButton';
+import CancelButton from './CancelButton';
 
 class CreateSeasonForm extends Component {
-  state = {firstName: '', lastName: '', age: null, occupation: null, gender: null};
+  state = {
+    firstName: '',
+    lastName: '',
+    age: null,
+    occupation: null,
+    gender: null,
+    homeLocation: null,
+    disabled: true,
+  };
 
   onFirstNameInput(firstName) {
-    this.setState({firstName});
+    this.setState({firstName, disabled: firstName.length === 0});
   }
 
   onLastNameInput(lastName) {
@@ -22,6 +32,10 @@ class CreateSeasonForm extends Component {
 
   onGenderSelect(gender) {
     this.setState({gender});
+  }
+
+  onHomeLocationInput(homeLocation) {
+    this.setState({homeLocation});
   }
 
   async onSubmit() {
@@ -89,13 +103,21 @@ class CreateSeasonForm extends Component {
             onChange={() => this.onGenderSelect('f')}
           />
         </Form.Field>
+        <Form.Field>
+          <label>Home Location</label>
+          <input
+            placeholder='City, State'
+            value={this.state.homeLocation}
+            onInput={e => this.onHomeLocationInput(e.target.value)}
+          />
+        </Form.Field>
         <Grid columns={2}>
           <Grid.Row>
             <Grid.Column>
-              <Button primary fluid type='submit' content='Add' onClick={() => this.onSubmit()} />
+              <SubmitButton disabled={this.state.disabled} content='Add' onClick={() => this.onSubmit()} />
             </Grid.Column>
             <Grid.Column>
-              <Button fluid content='Cancel' onClick={this.props.onCancel} />
+              <CancelButton onClick={this.props.onCancel} />
             </Grid.Column>
           </Grid.Row>
         </Grid>
