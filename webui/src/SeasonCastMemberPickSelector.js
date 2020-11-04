@@ -8,6 +8,7 @@ class SeasonCastMemberPickSelector extends Component {
     const res = await fetch(`/api/seasons/${this.props.seasonId}/cast`);
     if (res.ok) {
       const json = await res.json();
+      console.log(json.seasonCastMembers);
       return json.seasonCastMembers;
     }
   }
@@ -38,6 +39,7 @@ class SeasonCastMemberPickSelector extends Component {
         id: cm.id,
         firstName: cm.firstName,
         lastName: cm.lastName,
+        roseCount: cm.Roses.length,
         selected: picks.findIndex(pick => pick.SeasonCastMemberId === cm.id) !== -1,
       }))
     });
@@ -79,7 +81,7 @@ class SeasonCastMemberPickSelector extends Component {
         {this.state.castMembers.map((castMember, i) => (
           <Grid.Row key={i} columns={2}>
             <Grid.Column>
-              {castMember.firstName}
+              {castMember.firstName} (Roses: {castMember.roseCount})
             </Grid.Column>
             <Grid.Column textAlign='right'>
               <Icon

@@ -93,7 +93,10 @@ Season.prototype.createCastMember = async function(accessToken, seasonCastMember
 Season.prototype.castMembers = async function(accessToken) {
   if (!accessToken.isMemberOfGroup(this.ResourceGroupId)) throw new MissingMembershipError(this.ResourceGroupId);
   const {count, rows} = await models.SeasonCastMember
-    .findAndCountAll({where: {SeasonId: this.id}});
+    .findAndCountAll({
+      where: {SeasonId: this.id},
+      include: [models.Rose],
+    });
   return {count, seasonCastMembers: rows.map(r => new SeasonCastMember(r.toJSON()))};
 };
 
