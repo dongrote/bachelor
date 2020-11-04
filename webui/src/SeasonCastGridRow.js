@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Grid, Header } from 'semantic-ui-react';
+import { Grid, Header } from 'semantic-ui-react';
 import SeasonCastMemberCard from './SeasonCastMemberCard';
 import AddCastMemberButton from './AddCastMemberButton';
 

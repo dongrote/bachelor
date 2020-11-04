@@ -56,7 +56,7 @@ class SignUpForm extends Component {
           <label>Confirm Password</label>
           <input type='password' placeholder='password' onInput={event => this.onConfirmPasswordInput(event.target.value)} />
         </Form.Field>
-        <Grid columns={2}>
+        <Grid columns={1}>
           <Grid.Column>
             <Grid.Row>
               <Button
@@ -69,7 +69,6 @@ class SignUpForm extends Component {
               />
             </Grid.Row>
           </Grid.Column>
-          <Grid.Column></Grid.Column>
         </Grid>
         <Message error content={this.state.errorMessage} />
       </Form>

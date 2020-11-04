@@ -1,39 +1,47 @@
-import React from 'react';
-import { Grid } from 'semantic-ui-react';
+import React, { Component } from 'react';
+import { Button, Segment, Sidebar } from 'semantic-ui-react';
+import NavigationSidebar from './NavigationSidebar';
 import UserProfile from './UserProfile';
-import CreateSeasonButton from './CreateSeasonButton';
-import EditProfileButton from './EditProfileButton';
-import SeasonCard from './SeasonCard';
+import SeasonsView from './SeasonsView';
 
-export default props => (
-  <Grid>
-    <Grid.Row columns={2}>
-      <Grid.Column>
-        <UserProfile
-          displayName={props.displayName}
-          username={props.username}
-          role={props.role}
-          onSignOut={props.onSignOut}
+class UserView extends Component {
+  state = {menuVisible: false, selectedMenuItem: 'seasons'};
+  toggleMenu() {
+    this.setState({menuVisible: !this.state.menuVisible});
+  }
+  render() {
+    return (
+      <Sidebar.Pushable>
+        <NavigationSidebar
+          visible={this.state.menuVisible}
+          selected={this.state.selectedMenuItem}
+          displayName={this.props.displayName}
+          role={this.props.role}
+          onClick={selectedMenuItem => {
+            this.setState({selectedMenuItem});
+            this.toggleMenu();
+          }}
         />
-      </Grid.Column>
-      <Grid.Column verticalAlign='middle'>
-        <CreateSeasonButton onCreate={props.onSeasonCreate} />
-        <EditProfileButton />
-      </Grid.Column>
-    </Grid.Row>
-    {props.seasons && props.seasons.map(s => (
-      <Grid.Row columns={1}>
-        <Grid.Column>
-          <SeasonCard
-            seasonId={s.id}
-            ResourceGroupId={s.ResourceGroupId}
-            name={s.name}
-            role={s.role}
-            type={s.type}
-            description={s.description}
-          />
-        </Grid.Column>
-      </Grid.Row>
-    ))}
-  </Grid>
-)
+        <Sidebar.Pusher>
+          <Segment.Group>
+            <Segment textAlign='left'>
+              <Button basic icon='list' onClick={() => this.toggleMenu()} />
+            </Segment>
+            {this.state.selectedMenuItem === 'seasons' && (
+              <Segment>
+                <SeasonsView />
+              </Segment>
+            )}
+            {this.state.selectedMenuItem === 'profile' && (
+              <Segment>
+                <UserProfile />
+              </Segment>
+            )}
+          </Segment.Group>
+        </Sidebar.Pusher>
+      </Sidebar.Pushable>
+    );
+  }
+}
+
+export default UserView;

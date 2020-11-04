@@ -48,8 +48,7 @@ class SignInForm extends Component {
             onInput={event => this.onPasswordInput(event.target.value)}
           />
         </Form.Field>
-        <Grid columns={2}>
-          <Grid.Column></Grid.Column>
+        <Grid columns={1}>
           <Grid.Column>
             <Grid.Row>
               <Button
