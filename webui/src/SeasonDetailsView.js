@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Header } from 'semantic-ui-react';
+import { Form } from 'semantic-ui-react';
 
 class SeasonDetailsView extends Component {
   state = {name: null, type: null, startDate: null, endDate: null, episodeCount: 0, loading: true};
@@ -30,30 +30,20 @@ class SeasonDetailsView extends Component {
   }
   render() {
     return (
-      <Grid columns={2}>
-        <Grid.Row>
-          <Grid.Column>
-            <Header content='Season Name' />
-          </Grid.Column>
-          <Grid.Column>
-            {this.state.name}
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            <Header content='Season Type' />
-          </Grid.Column>
-          <Grid.Column>
-            {this.state.type}
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>
-            <Header content='Episodes' />
-          </Grid.Column>
-          <Grid.Column>{this.state.episodeCount}</Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <Form>
+        <Form.Field>
+          <label>Season Name</label>
+          <input readOnly value={this.state.name} />
+        </Form.Field>
+        <Form.Field>
+          <label>Season Type</label>
+          <input readOnly value={this.state.type} />
+        </Form.Field>
+        <Form.Field>
+          <label>Episodes</label>
+          <input readOnly value={this.state.episodeCount} />
+        </Form.Field>
+      </Form>
     );
   }
 }

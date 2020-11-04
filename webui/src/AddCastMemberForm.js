@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Grid, Button, Radio } from 'semantic-ui-react';
+import { Form, Grid, Radio } from 'semantic-ui-react';
 import SubmitButton from './SubmitButton';
 import CancelButton from './CancelButton';
 

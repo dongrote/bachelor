@@ -45,6 +45,15 @@ Season.findAllForAdmin = async (accessToken, options) => {
 
 Season.findAllForUser = async (accessToken, options) => {
   const seasons = _.filter(await Promise.all(accessToken.groupIds().map(async groupId => await Season.findByResourceGroupId(accessToken, groupId)), s => s !== null));
+  seasons.forEach(s => {
+    const group = accessToken.groups().find(g => s.ResourceGroupId === g.id);
+    if (group) {
+      s.role = group.role;
+    }
+    if (accessToken.isAdmin()) {
+      s.role = 'owner';
+    }
+  });
   return {count: seasons.length, seasons};
 };
 
