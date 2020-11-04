@@ -10,7 +10,7 @@ const env = require('../env'),
   app = require('../app'),
   core = require('../core'),
   log = require('debug-logger')('api:server'),
-  io = require('socket.io')({serveClient: false}),
+  io = core.websocket,
   http = require('http');
 
 /**

@@ -14,6 +14,7 @@ const create = require('./create'),
   findEpisode = require('./findEpisode'),
   createEpisode = require('./createEpisode'),
   findEligibleCastMembers = require('./findEligibleCastMembers'),
+  findRoses = require('./findRoses'),
   awardRose = require('./awardRose'),
   revokeRose = require('./revokeRose');
 
@@ -31,5 +32,6 @@ exports.get('/:id/episodes', findAllEpisodes);
 exports.post('/:id/episodes', createEpisode);
 exports.get('/:id/episodes/:num', findEpisode);
 exports.get('/:id/episodes/:num/eligible', findEligibleCastMembers);
+exports.get('/:id/episodes/:num/rose', findRoses);
 exports.post('/:id/episodes/:num/rose', awardRose);
 exports.delete('/:id/episodes/:num/rose', revokeRose);

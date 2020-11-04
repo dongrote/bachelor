@@ -12,6 +12,7 @@ function Season(seasonData) {
 exports = module.exports = Season;
 const log = require('debug-logger')('Season'),
   {MissingMembershipError, MissingRoleError} = require('./rbac'),
+  websocket = require('./websocket'),
   ResourceGroup = require('./ResourceGroup'),
   Episode = require('./Episode'),
   SeasonCastMember = require('./SeasonCastMember'),
@@ -29,7 +30,9 @@ Season.create = async (accessToken, details) => {
       endedAt: endDate,
       ResourceGroupId: resourceGroup.id,
     });
-    return dbrow ? new Season(_.assignIn(dbrow.toJSON(), {resourceGroup})) : null;
+  const season = dbrow ? new Season(_.assignIn(dbrow.toJSON(), {resourceGroup})) : null;
+  if (season) websocket.emit('Season.create', season);
+  return season;
 };
 
 Season.findAll = async (accessToken, options) => {
@@ -73,7 +76,7 @@ Season.findByResourceGroupId = async (accessToken, resourceGroupId) => {
 Season.prototype.createCastMember = async function(accessToken, seasonCastMember) {
   const roles = ['owner', 'member'];
   if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
-  return await SeasonCastMember
+  const createdSeasonCastMember = await SeasonCastMember
     .create(this, {
       firstName: _.get(seasonCastMember, 'firstName'),
       lastName: _.get(seasonCastMember, 'lastName'),
@@ -81,6 +84,8 @@ Season.prototype.createCastMember = async function(accessToken, seasonCastMember
       occupation: _.get(seasonCastMember, 'occupation'),
       gender: _.get(seasonCastMember, 'gender'),
     });
+  websocket.emit('SeasonCastMember.create', createdSeasonCastMember);
+  return createdSeasonCastMember;
 };
 
 Season.prototype.castMembers = async function(accessToken) {
@@ -127,11 +132,13 @@ Season.prototype.createRole = async function(accessToken, name, details) {
 Season.prototype.addUserMember = async function(accessToken, user) {
   const resourceGroupRole = await this.resourceGroup.findRole(accessToken, 'member');
   await this.resourceGroup.bindUserRole(accessToken, user, resourceGroupRole);
+  websocket.emit('SeasonUserMembers.update', await this.userMembers());
 };
 
 Season.prototype.removeUserMember = async function(accessToken, user) {
   const resourceGroupRole = await this.resourceGroup.findRole(accessToken, 'member');
   await this.resourceGroup.unbindUserRole(accessToken, user, resourceGroupRole);
+  websocket.emit('SeasonUserMembers.update', await this.userMembers());
 };
 
 Season.prototype.episodeCount = async function(accessToken) {
@@ -158,7 +165,9 @@ Season.prototype.createEpisode = async function(accessToken, options) {
   if (!accessToken.hasGroupRole(this.ResourceGroupId, 'owner')) throw new MissingRoleError('owner');
   const {title} = _.pick(options, ['title']),
     episodeNumber = await this.nextEpisodeNumber(accessToken);
-  return await Episode.create(this, {episodeNumber, title});
+  const episode = await Episode.create(this, {episodeNumber, title});
+  websocket.emit('Episode.create', episode);
+  return episode;
 };
 
 Season.prototype.eligibleCastMembers = async function(accessToken, episode) {
@@ -170,10 +179,14 @@ Season.prototype.awardRose = async function(accessToken, episode, seasonCastMemb
   const roles = ['owner', 'member'];
   if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
   await episode.awardRose(seasonCastMember);
+  websocket.emit('Rose.create', {episode, seasonCastMember});
+  websocket.emit('EligibleCastMembers.update', {SeasonId: this.id, episodeNumber: episode.number, castMembers: await episode.eligibleCastMembers(this)});
 };
 
 Season.prototype.revokeRose = async function(accessToken, episode, seasonCastMember) {
   const roles = ['owner', 'member'];
   if (!accessToken.hasAnyGroupRole(this.ResourceGroupId, roles)) throw new MissingRoleError(roles);
   await episode.revokeRose(seasonCastMember);
+  websocket.emit('Rose.destroy', {episode, seasonCastMember});
+  websocket.emit('EligibleCastMembers.update', {SeasonId: this.id, episodeNumber: episode.number, castMembers: await episode.eligibleCastMembers(this)});
 };

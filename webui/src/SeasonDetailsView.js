@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Form } from 'semantic-ui-react';
+import io from './websocket';
+import { uid } from 'uid';
 
 class SeasonDetailsView extends Component {
   state = {name: null, type: null, startDate: null, endDate: null, episodeCount: 0, loading: true};
@@ -25,8 +27,32 @@ class SeasonDetailsView extends Component {
     }
     await this.fetchEpisodeCount();
   }
+  handleSeasonDetailUpdates(details) {
+    this.setState({
+      name: details.name,
+      type: details.type,
+      startDate: details.startDate,
+      endDate: details.endDate,
+    });
+  }
+  registerEventHandler() {
+    const caller = details => this.handleSeasonDetailUpdates(details);
+    caller.instanceId = this.instanceId;
+    console.log('installing listener', caller);
+    io.on('season-details', caller);
+  }
   async componentDidMount() {
+    this.instanceId = uid();
+    this.registerEventHandler();
     await this.fetchSeasonDetails();
+  }
+  componentWillUnmount() {
+    const listeners = io.listeners('season-details');
+    const myListener = listeners.find(l => l.instanceId === this.instanceId);
+    if (myListener) {
+      console.log('removing listener', myListener);
+      io.off('season-details', myListener);
+    }
   }
   render() {
     return (
