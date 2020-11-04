@@ -6,6 +6,7 @@ exports = module.exports = {
   sqliteDatabasePath: () => _.get(process.env, 'SQLITEDB_PATH', '/var/run/db.sqlite'),
   refreshTokenCookieName: () => _.get(process.env, 'REFRESH_TOKEN_COOKIE_NAME', 'refreshToken'),
   accessTokenCookieName: () => _.get(process.env, 'ACCESS_TOKEN_COOKIE_NAME', 'accessToken'),
+  accessTokenExpiresInSeconds: () => Number(_.get(process.env, 'ACCESS_TOKEN_EXPIRES_IN_SECONDS', 60)),
   tokenSigningKey: () => _.get(process.env, 'TOKEN_SIGNING_KEY', 'trust me this is secure probably maybe'),
   tokenSigningAlgorithm: () => _.get(process.env, 'TOKEN_SIGNING_ALGORITHM', 'HS256'),
 };
