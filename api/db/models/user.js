@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       models.User.hasMany(models.ResourceGroupRoleBinding);
+      models.User.hasMany(models.SeasonCastMemberPicks);
     }
   };
   User.init({

@@ -16,7 +16,10 @@ const create = require('./create'),
   findEligibleCastMembers = require('./findEligibleCastMembers'),
   findRoses = require('./findRoses'),
   awardRose = require('./awardRose'),
-  revokeRose = require('./revokeRose');
+  revokeRose = require('./revokeRose'),
+  createPick = require('./createPick'),
+  destroyPick = require('./destroyPick'),
+  findPicks = require('./findPicks');
 
 exports.post('/', create);
 exports.get('/', findAll);
@@ -28,6 +31,9 @@ exports.post('/:id/members', addGroupMember);
 exports.delete('/:id/members', removeGroupMember);
 exports.get('/:id/roles', findAllRoles);
 exports.post('/:id/roles', createRole);
+exports.get('/:id/picks', findPicks);
+exports.post('/:id/picks', createPick);
+exports.delete('/:id/picks', destroyPick);
 exports.get('/:id/episodes', findAllEpisodes);
 exports.post('/:id/episodes', createEpisode);
 exports.get('/:id/episodes/:num', findEpisode);

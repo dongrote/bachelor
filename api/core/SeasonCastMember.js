@@ -8,6 +8,7 @@ function SeasonCastMember(data) {
   this.occupation = data.occupation;
   this.gender = data.gender;
   this.homeLocation = data.homeLocation;
+  this.Roses = data.Roses || [];
 }
 
 exports = module.exports = SeasonCastMember;
