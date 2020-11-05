@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Card, Grid, Button } from 'semantic-ui-react';
+import { Card, Button } from 'semantic-ui-react';
 import io from './websocket';
 import { uid } from 'uid';
+import SeasonCastMemberCardContent from './SeasonCastMemberCardContent';
 
 class EligibleCastMemberCard extends Component {
-  state = {hasRose: false};
+  state = {hasRose: false, roseButtonLoading: false};
 
   async updateHasRose() {
     const res = await fetch(`/api/seasons/${this.props.seasonId}/episodes/${this.props.episodeNumber}/rose`);
@@ -62,41 +63,45 @@ class EligibleCastMemberCard extends Component {
   }
 
   async awardRose() {
+    this.setState({roseButtonLoading: true});
     await fetch(`/api/seasons/${this.props.seasonId}/episodes/${this.props.episodeNumber}/rose`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({castMemberId: this.props.castMemberId})
     });
+    this.setState({roseButtonLoading: false});
   }
 
   async revokeRose() {
+    this.setState({roseButtonLoading: true});
     await fetch(`/api/seasons/${this.props.seasonId}/episodes/${this.props.episodeNumber}/rose`, {
       method: 'DELETE',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({castMemberId: this.props.castMemberId})
     });
+    this.setState({roseButtonLoading: false});
   }
 
   render() {
     return (
       <Card fluid>
         <Card.Content>
-          <Card.Header>
-            <Grid columns={2}>
-              <Grid.Row>
-                <Grid.Column>
-                  {this.props.firstName}
-                </Grid.Column>
-                <Grid.Column textAlign='right'>
-                  <Button
-                    color={this.state.hasRose ? 'red' : 'green'}
-                    content={`${this.state.hasRose ? 'Take' : 'Give'} Rose`}
-                    onClick={() => this.state.hasRose ? this.revokeRose() : this.awardRose()}
-                  />
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-          </Card.Header>
+          <SeasonCastMemberCardContent
+            seasonCastMemberId={this.props.castMemberId}
+            firstName={this.props.firstName}
+            lastName={this.props.lastName}
+            age={this.props.age}
+            home={this.props.home}
+            occupation={this.props.occupation}
+          />
+        </Card.Content>
+        <Card.Content extra>
+          <Button
+            loading={this.state.roseButtonLoading}
+            color={this.state.hasRose ? 'red' : 'green'}
+            content={`${this.state.hasRose ? 'Take' : 'Give'} Rose`}
+            onClick={() => this.state.hasRose ? this.revokeRose() : this.awardRose()}
+          />
         </Card.Content>
       </Card>
     );

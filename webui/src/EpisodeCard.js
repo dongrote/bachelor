@@ -15,6 +15,7 @@ class EpisodeCard extends Component {
         <EpisodeDetails
           seasonId={this.props.seasonId}
           episodeNumber={this.props.episodeNumber}
+          castMemberCount={this.props.castMemberCount}
           onHide={() => this.toggleShowDetails()}
         />
       )
@@ -24,8 +25,9 @@ class EpisodeCard extends Component {
             <Card.Header>
               <Header content={`Episode ${this.props.episodeNumber}`} />
             </Card.Header>
+            {this.props.castMemberCount && <Card.Description>{this.props.castMemberCount} Remaining</Card.Description>}
             {this.props.title && <Card.Description>{this.props.title}</Card.Description>}
-            <Card.Description>Air Date: {this.props.airDate}</Card.Description>
+            {this.props.airDate && <Card.Description>Air Date: {this.props.airDate}</Card.Description>}
           </Card.Content>
         </Card>
       );

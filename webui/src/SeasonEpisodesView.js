@@ -9,7 +9,8 @@ class SeasonEpisodesView extends Component {
     const res = await fetch(`/api/seasons/${this.props.seasonId}/episodes`);
     if (res.ok) {
       const json = await res.json();
-      this.setState({episodes: json.episodes.reverse()});
+      json.episodes.reverse();
+      this.setState({episodes: json.episodes});
     }
   }
   async componentDidMount() {
@@ -28,7 +29,11 @@ class SeasonEpisodesView extends Component {
         {this.state.episodes.map(e => (
           <Grid.Row>
             <Grid.Column>
-              <EpisodeCard title={e.title} episodeNumber={e.number} seasonId={this.props.seasonId} />
+              <EpisodeCard
+                title={e.title}
+                episodeNumber={e.number}
+                seasonId={this.props.seasonId}
+              />
             </Grid.Column>
           </Grid.Row>
         ))}

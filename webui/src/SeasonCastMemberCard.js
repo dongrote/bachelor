@@ -1,22 +1,18 @@
 import React from 'react';
-import { Card, Grid, Header, Image } from 'semantic-ui-react';
+import { Card } from 'semantic-ui-react';
+import SeasonCastMemberCardContent from './SeasonCastMemberCardContent';
 
 export default props => (
   <Card fluid>
     <Card.Content>
-      <Grid columns={2} verticalAlign='top'>
-        <Grid.Row>
-          <Grid.Column>
-            <Image circular size='small' src={`/api/cast/${props.seasonCastMemberId}/photo`} />
-          </Grid.Column>
-          <Grid.Column textAlign='right'>
-            <Header content={`${props.firstName} ${props.lastName}`} />
-            <p>{props.age} years old</p>
-            <p>{props.home}</p>
-            <p>{props.occupation}</p>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <SeasonCastMemberCardContent
+        seasonCastMemberId={props.seasonCastMemberId}
+        firstName={props.firstName}
+        lastName={props.lastName}
+        age={props.age}
+        home={props.home}
+        occupation={props.occupation}
+      />
     </Card.Content>
     {props.role === 'owner' && (
       <Card.Content extra>

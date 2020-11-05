@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Card, Grid, Header, Icon, Image } from 'semantic-ui-react';
+import { Card, Grid, Header, Icon } from 'semantic-ui-react';
+import SeasonCastMemberCardContent from './SeasonCastMemberCardContent';
 
 class SeasonCastMemberPickSelector extends Component {
   state = {castMembers: [], picksLeft: null};
@@ -91,25 +92,20 @@ class SeasonCastMemberPickSelector extends Component {
             <Grid.Column>
               <Card fluid>
                 <Card.Content>
-                  <Grid columns={2}>
-                    <Grid.Row>
-                      <Grid.Column>
-                        <Image circular size='tiny' src={`/api/cast/${castMember.id}/photo`} />
-                      </Grid.Column>
-                      <Grid.Column textAlign='right' verticalAlign='bottom'>
-                        <Header content={castMember.firstName} />
-                        <p>{castMember.age} years old</p>
-                        <p>{castMember.home}</p>
-                        <p>{castMember.occupation}</p>
-                      </Grid.Column>
-                    </Grid.Row>
-                  </Grid>
+                  <SeasonCastMemberCardContent
+                    seasonCastMemberId={castMember.id}
+                    firstName={castMember.firstName}
+                    lastName={castMember.lastName}
+                    age={castMember.age}
+                    home={castMember.home}
+                    occupation={castMember.occupation}
+                  />
                 </Card.Content>
                 <Card.Content extra>
                   <Grid columns={2}>
                     <Grid.Row>
                       <Grid.Column>
-                        <Icon color='red' name='heart' /> {castMember.roseCount} Roses
+                        <Icon color='red' name='heart' /> {castMember.roseCount} Rose{castMember.roseCount === 1 ? '' : 's'}
                       </Grid.Column>
                       <Grid.Column textAlign='right'>
                         <Icon
