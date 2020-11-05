@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, Icon, Grid } from 'semantic-ui-react';
+import { Button, Card } from 'semantic-ui-react';
 import io from './websocket';
 import { uid } from 'uid';
 import SeasonCastMemberCardContent from './SeasonCastMemberCardContent';
