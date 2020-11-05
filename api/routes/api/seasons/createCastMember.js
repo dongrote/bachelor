@@ -13,6 +13,7 @@ exports = module.exports = async (req, res, next) => {
       age: req.body.age,
       occupation: req.body.occupation,
       gender: req.body.gender,
+      homeLocation:  req.body.homeLocation,
     });
     res.json(castMember);
   } catch (e) {

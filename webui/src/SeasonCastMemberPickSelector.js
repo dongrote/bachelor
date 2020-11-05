@@ -37,6 +37,9 @@ class SeasonCastMemberPickSelector extends Component {
       id: cm.id,
       firstName: cm.firstName,
       lastName: cm.lastName,
+      home: cm.homeLocation,
+      occupation: cm.occupation,
+      age: cm.age,
       roseCount: cm.Roses.length,
       selected: picks.findIndex(pick => pick.SeasonCastMemberId === cm.id) !== -1,
     }));
@@ -95,6 +98,9 @@ class SeasonCastMemberPickSelector extends Component {
                       </Grid.Column>
                       <Grid.Column textAlign='right' verticalAlign='bottom'>
                         <Header content={castMember.firstName} />
+                        <p>{castMember.age} years old</p>
+                        <p>{castMember.home}</p>
+                        <p>{castMember.occupation}</p>
                       </Grid.Column>
                     </Grid.Row>
                   </Grid>
@@ -102,7 +108,9 @@ class SeasonCastMemberPickSelector extends Component {
                 <Card.Content extra>
                   <Grid columns={2}>
                     <Grid.Row>
-                      <Grid.Column>Roses: {castMember.roseCount}</Grid.Column>
+                      <Grid.Column>
+                        <Icon color='red' name='heart' /> {castMember.roseCount} Roses
+                      </Grid.Column>
                       <Grid.Column textAlign='right'>
                         <Icon
                           size='large'
