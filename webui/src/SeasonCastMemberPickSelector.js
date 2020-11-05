@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid, Header, Icon, Image } from 'semantic-ui-react';
+import { Card, Grid, Header, Icon, Image } from 'semantic-ui-react';
 
 class SeasonCastMemberPickSelector extends Component {
   state = {castMembers: [], picksLeft: null};
@@ -33,15 +33,20 @@ class SeasonCastMemberPickSelector extends Component {
     const castMembers = await this.fetchCastMembers(),
       picks = await this.fetchPicks(),
       season = await this.fetchSeason();
+    const markedCastMembers = castMembers.map(cm => ({
+      id: cm.id,
+      firstName: cm.firstName,
+      lastName: cm.lastName,
+      roseCount: cm.Roses.length,
+      selected: picks.findIndex(pick => pick.SeasonCastMemberId === cm.id) !== -1,
+    }));
+    markedCastMembers.sort((left, right) => {
+      if (left.selected === right.selected) return 0;
+      return left.selected && !right.selected ? -1 : 1;
+    });
     this.setState({
       picksLeft: season.pickLimit - picks.length,
-      castMembers: castMembers.map(cm => ({
-        id: cm.id,
-        firstName: cm.firstName,
-        lastName: cm.lastName,
-        roseCount: cm.Roses.length,
-        selected: picks.findIndex(pick => pick.SeasonCastMemberId === cm.id) !== -1,
-      }))
+      castMembers: markedCastMembers,
     });
   }
 
@@ -79,17 +84,36 @@ class SeasonCastMemberPickSelector extends Component {
           </Grid.Column>
         </Grid.Row>
         {this.state.castMembers.map((castMember, i) => (
-          <Grid.Row key={i} columns={2}>
+          <Grid.Row key={i} columns={1}>
             <Grid.Column>
-              <Image circular avatar src={`/api/cast/${castMember.id}/photo`} />
-              {castMember.firstName} (Roses: {castMember.roseCount})
-            </Grid.Column>
-            <Grid.Column textAlign='right'>
-              <Icon
-                size='large'
-                name={`${castMember.selected ? 'check ' : ''}square outline`}
-                onClick={() => castMember.selected ? this.unmakePick(castMember.id) : this.makePick(castMember.id)}
-              />
+              <Card fluid>
+                <Card.Content>
+                  <Grid columns={2}>
+                    <Grid.Row>
+                      <Grid.Column>
+                        <Image circular size='tiny' src={`/api/cast/${castMember.id}/photo`} />
+                      </Grid.Column>
+                      <Grid.Column textAlign='right' verticalAlign='bottom'>
+                        <Header content={castMember.firstName} />
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                </Card.Content>
+                <Card.Content extra>
+                  <Grid columns={2}>
+                    <Grid.Row>
+                      <Grid.Column>Roses: {castMember.roseCount}</Grid.Column>
+                      <Grid.Column textAlign='right'>
+                        <Icon
+                          size='large'
+                          name={`${castMember.selected ? 'check ' : ''}square outline`}
+                          onClick={() => castMember.selected ? this.unmakePick(castMember.id) : this.makePick(castMember.id)}
+                        />
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                </Card.Content>
+              </Card>
             </Grid.Column>
           </Grid.Row>
         ))}

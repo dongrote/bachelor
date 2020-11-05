@@ -29,6 +29,7 @@ class SeasonCastGridRow extends Component {
             lastName={c.lastName}
             age={c.age}
             occupation={c.occupation}
+            home={c.homeLocation}
           />)}
         </Grid.Column>
       </Grid.Row>

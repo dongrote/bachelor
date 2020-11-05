@@ -4,5 +4,5 @@ docker run \
   -p 3000:3000 \
   -v /home/dgrote/git/bachelor/api:/usr/src/app \
   -v /home/dgrote/bachelor-runtime:/var/run \
-  bachelor:dev \
-  /bin/sh
+  -d \
+  bachelor:dev

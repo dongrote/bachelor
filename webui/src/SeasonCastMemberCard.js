@@ -1,20 +1,22 @@
 import React from 'react';
-import { Card, Image } from 'semantic-ui-react';
+import { Card, Grid, Header, Image } from 'semantic-ui-react';
 
 export default props => (
   <Card fluid>
     <Card.Content>
-      <Card.Header>
-        <Image circular avatar src={`/api/cast/${props.seasonCastMemberId}/photo`} />
-        {props.firstName} {props.lastName}
-      </Card.Header>
-      <Card.Description>
-        <p>Age: {props.age}</p>
-        <p>Occupation: {props.occupation}</p>
-        {props.home && (
-          <p>{props.home}</p>
-        )}
-      </Card.Description>
+      <Grid columns={2} verticalAlign='top'>
+        <Grid.Row>
+          <Grid.Column>
+            <Image circular size='small' src={`/api/cast/${props.seasonCastMemberId}/photo`} />
+          </Grid.Column>
+          <Grid.Column textAlign='right'>
+            <Header content={`${props.firstName} ${props.lastName}`} />
+            <p>{props.age} years old</p>
+            <p>{props.home}</p>
+            <p>{props.occupation}</p>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
     </Card.Content>
     {props.role === 'owner' && (
       <Card.Content extra>
