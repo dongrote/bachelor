@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Button } from 'semantic-ui-react';
+import { Button, Card, Icon, Grid } from 'semantic-ui-react';
 import io from './websocket';
 import { uid } from 'uid';
 import SeasonCastMemberCardContent from './SeasonCastMemberCardContent';
@@ -97,9 +97,13 @@ class EligibleCastMemberCard extends Component {
         </Card.Content>
         <Card.Content extra>
           <Button
+            basic={!this.state.hasRose}
+            circular
+            floated='right'
             loading={this.state.roseButtonLoading}
-            color={this.state.hasRose ? 'red' : 'green'}
-            content={`${this.state.hasRose ? 'Take' : 'Give'} Rose`}
+            color='red'
+            size='large'
+            icon='heart outline'
             onClick={() => this.state.hasRose ? this.revokeRose() : this.awardRose()}
           />
         </Card.Content>
