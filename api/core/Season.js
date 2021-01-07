@@ -85,6 +85,7 @@ Season.prototype.createCastMember = async function(accessToken, seasonCastMember
       age: _.get(seasonCastMember, 'age'),
       occupation: _.get(seasonCastMember, 'occupation'),
       gender: _.get(seasonCastMember, 'gender'),
+      homeLocation: _.get(seasonCastMember, 'homeLocation'),
     });
   websocket.emit('SeasonCastMember.create', createdSeasonCastMember);
   return createdSeasonCastMember;
