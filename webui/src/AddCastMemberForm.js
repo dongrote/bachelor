@@ -12,6 +12,7 @@ class CreateSeasonForm extends Component {
     gender: null,
     homeLocation: null,
     disabled: true,
+    busy: false,
   };
 
   onFirstNameInput(firstName) {
@@ -39,11 +40,13 @@ class CreateSeasonForm extends Component {
   }
 
   async onSubmit() {
+    this.setState({busy: true});
     const res = await fetch(`/api/seasons/${this.props.seasonId}/cast`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(this.state)
     });
+    this.setState({busy: false});
     if (res.ok) {
       this.props.onCreate();
     }
@@ -114,7 +117,7 @@ class CreateSeasonForm extends Component {
         <Grid columns={2}>
           <Grid.Row>
             <Grid.Column>
-              <SubmitButton disabled={this.state.disabled} content='Add' onClick={() => this.onSubmit()} />
+              <SubmitButton loading={this.state.busy} disabled={this.state.disabled} content='Add' onClick={() => this.onSubmit()} />
             </Grid.Column>
             <Grid.Column>
               <CancelButton onClick={this.props.onCancel} />

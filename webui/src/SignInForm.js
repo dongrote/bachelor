@@ -8,6 +8,7 @@ class SignInForm extends Component {
     buttonDisabled: true,
     error: false,
     errorMessage: '',
+    busy: false,
   };
 
   onEmailInput(email) {
@@ -17,11 +18,13 @@ class SignInForm extends Component {
     this.setState({password, buttonDisabled: password.length === 0 || this.state.email.length === 0});
   }
   async onSignInButton() {
+    this.setState({busy: true});
     const res = await fetch('/auth/login', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: Buffer.from(JSON.stringify({username: this.state.email, password: this.state.password})),
     });
+    this.setState({busy: false});
     if (res.ok) {
       this.props.onSignIn();
     } else {
@@ -54,6 +57,7 @@ class SignInForm extends Component {
               <Button
                 fluid
                 primary
+                loading={this.state.busy}
                 disabled={this.state.buttonDisabled}
                 type='submit'
                 content='Sign In'
