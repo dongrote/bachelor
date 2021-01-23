@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Form, Grid, Message } from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
 
 class SignInForm extends Component {
   state = {
@@ -9,6 +10,7 @@ class SignInForm extends Component {
     error: false,
     errorMessage: '',
     busy: false,
+    signInSuccess: null,
   };
 
   onEmailInput(email) {
@@ -26,13 +28,14 @@ class SignInForm extends Component {
     });
     this.setState({busy: false});
     if (res.ok) {
-      this.props.onSignIn();
+      this.setState({signInSuccess: true});
     } else {
       const json = await res.json();
       this.setState({error: true, errorMessage: json.error.message});
     }
   }
   render() {
+    if (this.state.signInSuccess === true) return <Redirect to='/dashboard' />
     return (
       <Form error={this.state.error}>
         <Form.Field required>
