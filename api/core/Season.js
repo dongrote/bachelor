@@ -97,6 +97,7 @@ Season.prototype.castMembers = async function(accessToken) {
     .findAndCountAll({
       where: {SeasonId: this.id},
       include: [models.Rose],
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']],
     });
   return {count, seasonCastMembers: rows.map(r => new SeasonCastMember(r.toJSON()))};
 };
@@ -250,4 +251,14 @@ Season.prototype.availablePicks = async function(accessToken) {
   const {seasonCastMembers} = await this.castMembers(accessToken);
   const currentPicks = await this.picks(accessToken);
   return _.filter(seasonCastMembers, castMember => -1 === _.findIndex(currentPicks, pick => pick.SeasonCastMember.id === castMember.id));
+};
+
+Season.prototype.lockPicks = async function(accessToken) {
+  if (!accessToken.hasGroupRole(this.ResourceGroupId, 'owner')) throw new MissingRoleError('owner');
+  await models.Season.update({pickingLocked: true}, {where: {id: this.id}});
+};
+
+Season.prototype.unlockPicks = async function(accessToken) {
+  if (!accessToken.hasGroupRole(this.ResourceGroupId, 'owner')) throw new MissingRoleError('owner');
+  await models.Season.update({pickingLocked: false}, {where: {id: this.id}});
 };

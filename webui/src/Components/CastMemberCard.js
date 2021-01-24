@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Dimmer, Icon, Image } from 'semantic-ui-react';
 
 const CastMemberCard = props => (  
-  <Card raised>
+  <Card raised onClick={() => { if (props.onClick) props.onClick(); }}>
     <Dimmer.Dimmable blurring dimmed={props.eliminated}>
       <Image src={`/api/cast/${props.id}/photo`} />
     </Dimmer.Dimmable>
