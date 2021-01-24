@@ -97,6 +97,7 @@ Season.prototype.castMembers = async function(accessToken) {
     .findAndCountAll({
       where: {SeasonId: this.id},
       include: [models.Rose],
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']],
     });
   return {count, seasonCastMembers: rows.map(r => new SeasonCastMember(r.toJSON()))};
 };
