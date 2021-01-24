@@ -41,6 +41,28 @@ class PicksView extends Component {
     }
   }
 
+  async pickCastMember(seasonCastMemberId) {
+    const res = await fetch(`/api/seasons/${this.props.SeasonId}/picks`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({seasonCastMemberId}),
+    });
+    if (res.ok) {
+      await this.fetchPicks();
+    }
+  }
+
+  async unpickCastMember(seasonCastMemberId) {
+    const res = await fetch(`/api/seasons/${this.props.SeasonId}/picks`, {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({seasonCastMemberId}),
+    });
+    if (res.ok) {
+      await this.fetchPicks();
+    }
+  }
+
   async handleRoseCreate(event) {
     if (event.seasonCastMember.SeasonId === this.props.SeasonId) await this.fetchCastMembers();
   }
@@ -101,6 +123,7 @@ class PicksView extends Component {
                     homeLocation={castmember.homeLocation}
                     roseCount={castmember.Roses.length}
                     eliminated={castmember.Roses.length < this.state.maxRoseCount}
+                    onClick={() => this.unpickCastMember(castmember.id)}
                   />
                 ))
               }
@@ -124,6 +147,7 @@ class PicksView extends Component {
                     homeLocation={castmember.homeLocation}
                     roseCount={castmember.Roses.length}
                     eliminated={castmember.Roses.length < this.state.maxRoseCount}
+                    onClick={() => this.unpickCastMember(castmember.id)}
                   />
                 ))
               }
@@ -147,6 +171,7 @@ class PicksView extends Component {
                     homeLocation={castmember.homeLocation}
                     roseCount={castmember.Roses.length}
                     eliminated={castmember.Roses.length < this.state.maxRoseCount}
+                    onClick={() => this.pickCastMember(castmember.id)}
                   />
                 ))
               }
@@ -170,6 +195,7 @@ class PicksView extends Component {
                     homeLocation={castmember.homeLocation}
                     roseCount={castmember.Roses.length}
                     eliminated={castmember.Roses.length < this.state.maxRoseCount}
+                    onClick={() => this.pickCastMember(castmember.id)}
                   />
                 ))
               }
