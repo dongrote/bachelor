@@ -1,7 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { Container } from 'semantic-ui-react';
-import io from './websocket';
 import LandingView from './Views/LandingView';
 import DashboardView from './Views/DashboardView';
 import SeasonView from './Views/SeasonView';
@@ -9,6 +8,8 @@ import EpisodesView from './Views/EpisodesView';
 import EpisodeView from './Views/EpisodeView';
 import PicksView from './Views/PicksView';
 import FriendsView from './Views/FriendsView';
+import CreateNewCastMemberView from './Views/CreateNewCastMemberView';
+import CreateNewEpisodeView from './Views/CreateNewEpisodeView';
 
 const App = () => (
   <Container>
@@ -23,8 +24,18 @@ const App = () => (
       />
       <Route
         exact
+        path='/season/:SeasonId/cast/new'
+        render={props => <CreateNewCastMemberView SeasonId={Number(props.match.params.SeasonId)} />}
+      />
+      <Route
+        exact
         path='/season/:SeasonId/episodes'
         render={props => <EpisodesView SeasonId={Number(props.match.params.SeasonId)} />}
+      />
+      <Route
+        exact
+        path='/season/:SeasonId/episodes/new'
+        render={props => <CreateNewEpisodeView SeasonId={Number(props.match.params.SeasonId)} />}
       />
       <Route
         exact

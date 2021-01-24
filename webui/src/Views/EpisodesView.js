@@ -5,7 +5,7 @@ import MenuBar from '../Components/MenuBar';
 import EpisodeCard from '../Components/EpisodeCard';
 
 class EpisodesView extends Component {
-  state = {episodes: []};
+  state = {episodes: [], userRole: null};
   async fetchEpisodes() {
     const res = await fetch(`/api/seasons/${this.props.SeasonId}/episodes`);
     if (res.ok) {
@@ -15,7 +15,7 @@ class EpisodesView extends Component {
     }
   }
   async componentDidMount() {
-    await this.fetchEpisodes();
+    await Promise.all([this.fetchEpisodes(), this.fetchUserGroupRole()]);
   }
   render() {
     return (
