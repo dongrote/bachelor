@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import io from '../websocket';
 import { uid } from 'uid';
-import { Card, Grid, Header, Icon, Placeholder } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+import { Button, Card, Grid, Header, Icon, Placeholder } from 'semantic-ui-react';
 import CastMemberCard from '../Components/CastMemberCard';
 import MenuBar from '../Components/MenuBar';
 
@@ -13,7 +14,16 @@ class SeasonView extends Component {
     maxRoseCount: 0,
     cast: [],
     picks: [],
+    userRole: null,
   };
+  async fetchUserGroupRole() {
+    const [profile, season] = await Promise.all([
+      fetch('/api/users/profile').then(res => res.json()),
+      fetch(`/api/seasons/${this.props.SeasonId}`).then(res => res.json()),
+    ]);
+    const seasonGroup = profile.groups.find(group => group.id === season.ResourceGroupId);
+    this.setState({userRole: seasonGroup.role});
+  }
   async fetchCastMembers() {
     const res = await fetch(`/api/seasons/${this.props.SeasonId}/cast`);
     if (res.ok) {
@@ -67,7 +77,7 @@ class SeasonView extends Component {
     const revokeRoseHandler = event => this.handleRoseDestroy(event);
     this.installEventHandler('Rose.create', awardRoseHandler);
     this.installEventHandler('Rose.destroy', revokeRoseHandler);
-    await Promise.all([this.fetchSeasonDetails(), this.fetchCastMembers(), this.fetchPicks()]);
+    await Promise.all([this.fetchSeasonDetails(), this.fetchCastMembers(), this.fetchPicks(), this.fetchUserGroupRole()]);
   }
   render() {
     return (
@@ -86,6 +96,23 @@ class SeasonView extends Component {
                   <Icon name={this.state.pickingLocked ? 'lock' : 'lock open'} /> Picking {this.state.pickingLocked ? '' : 'un'}locked.
                   <br />
                   <Icon name='check square outline' /> Permitted picks: {this.state.pickLimit}
+                  <br />
+                  {this.state.userRole === 'owner' && (
+                    <Grid stackable columns={2}>
+                      <Grid.Row>
+                        <Grid.Column>
+                          <Link to={`/season/${this.props.SeasonId}/episodes/new`}>
+                            <Button basic primary icon='plus' content='Add New Episode' />
+                          </Link>
+                        </Grid.Column>
+                        <Grid.Column>
+                          <Link to={`/season/${this.props.SeasonId}/cast/new`}>
+                            <Button basic primary icon='plus' content='Add New Cast Member' />
+                          </Link>
+                        </Grid.Column>
+                      </Grid.Row>
+                    </Grid>
+                  )}
                 </Grid.Column>
                 <Grid.Column>
                   <Placeholder>
@@ -126,6 +153,14 @@ class SeasonView extends Component {
         <Grid.Row only='mobile'>
           <Grid.Column>
             <Card.Group centered itemsPerRow={2}>
+              {this.state.userRole === 'owner' && (
+                <Card raised onClick={() => alert('add new cast member')}>
+                  <Icon name='plus' size='huge' color='black' />
+                  <Card.Content>
+                    <Card.Header>Add New Cast Member</Card.Header>
+                  </Card.Content>
+                </Card>
+              )}
               {this.state.cast.map((castmember, i) => (
                 <CastMemberCard
                   key={i}
