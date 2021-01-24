@@ -52,6 +52,18 @@ class SeasonView extends Component {
     }
   }
 
+  async unlockPicks() {
+    const res = await fetch(`/api/seasons/${this.props.SeasonId}/picks/lock`, {method: 'DELETE'});
+    if (res.ok) {
+      this.setState({pickingLocked: false});
+    }
+  }
+
+  async lockPicks() {
+    const res = await fetch(`/api/seasons/${this.props.SeasonId}/picks/lock`, {method: 'POST'});
+    this.setState({pickingLocked: res.ok});
+  }
+
   async handleRoseCreate(event) {
     if (event.seasonCastMember.SeasonId === this.props.SeasonId) await this.fetchCastMembers();
   }
@@ -98,7 +110,7 @@ class SeasonView extends Component {
                   <Icon name='check square outline' /> Permitted picks: {this.state.pickLimit}
                   <br />
                   {this.state.userRole === 'owner' && (
-                    <Grid stackable columns={2}>
+                    <Grid stackable columns={3}>
                       <Grid.Row>
                         <Grid.Column>
                           <Link to={`/season/${this.props.SeasonId}/episodes/new`}>
@@ -109,6 +121,15 @@ class SeasonView extends Component {
                           <Link to={`/season/${this.props.SeasonId}/cast/new`}>
                             <Button basic primary icon='plus' content='Add New Cast Member' />
                           </Link>
+                        </Grid.Column>
+                        <Grid.Column>
+                          <Button
+                            basic
+                            primary
+                            icon={this.state.pickingLocked ? 'open lock' : 'lock'}
+                            content={this.state.pickingLocked ? 'Unlock Picks' : 'Lock Picks'}
+                            onClick={() => this.state.pickingLocked ? this.unlockPicks() : this.lockPicks()}
+                          />
                         </Grid.Column>
                       </Grid.Row>
                     </Grid>

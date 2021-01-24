@@ -19,7 +19,9 @@ const create = require('./create'),
   revokeRose = require('./revokeRose'),
   createPick = require('./createPick'),
   destroyPick = require('./destroyPick'),
-  findPicks = require('./findPicks');
+  findPicks = require('./findPicks'),
+  createPickingLock = require('./createPickingLock'),
+  destroyPickingLock = require('./destroyPickingLock');
 
 exports.post('/', create);
 exports.get('/', findAll);
@@ -34,6 +36,8 @@ exports.post('/:id/roles', createRole);
 exports.get('/:id/picks', findPicks);
 exports.post('/:id/picks', createPick);
 exports.delete('/:id/picks', destroyPick);
+exports.post('/:id/picks/lock', createPickingLock);
+exports.delete('/:id/picks/lock', destroyPickingLock);
 exports.get('/:id/episodes', findAllEpisodes);
 exports.post('/:id/episodes', createEpisode);
 exports.get('/:id/episodes/:num', findEpisode);

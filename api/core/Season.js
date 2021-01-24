@@ -251,3 +251,13 @@ Season.prototype.availablePicks = async function(accessToken) {
   const currentPicks = await this.picks(accessToken);
   return _.filter(seasonCastMembers, castMember => -1 === _.findIndex(currentPicks, pick => pick.SeasonCastMember.id === castMember.id));
 };
+
+Season.prototype.lockPicks = async function(accessToken) {
+  if (!accessToken.hasGroupRole(this.ResourceGroupId, 'owner')) throw new MissingRoleError('owner');
+  await models.Season.update({pickingLocked: true}, {where: {id: this.id}});
+};
+
+Season.prototype.unlockPicks = async function(accessToken) {
+  if (!accessToken.hasGroupRole(this.ResourceGroupId, 'owner')) throw new MissingRoleError('owner');
+  await models.Season.update({pickingLocked: false}, {where: {id: this.id}});
+};
