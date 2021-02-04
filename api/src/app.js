@@ -2,6 +2,7 @@
 const express = require('express');
 exports = module.exports = express();
 const _ = require('lodash'),
+  path = require('path'),
   log = require('debug-logger')('api:app'),
   env = require('./env'),
   HttpError = require('http-error-constructor'),
@@ -14,7 +15,7 @@ const router = require('./routes');
 
 /** middleware */
 exports.use(logger('dev'));
-exports.use('/', express.static('./public'));
+exports.use('/', express.static(path.join(__dirname, 'public')));
 exports.use(express.json());
 exports.use(express.urlencoded({ extended: false }));
 exports.use(cookieParser());

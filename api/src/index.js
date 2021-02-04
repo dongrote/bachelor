@@ -6,9 +6,9 @@ require('dotenv').config();
  * Module dependencies.
  */
 
-const env = require('../env'),
-  app = require('../app'),
-  core = require('../core'),
+const env = require('./env'),
+  app = require('./app'),
+  core = require('./core'),
   log = require('debug-logger')('api:server'),
   io = core.websocket,
   http = require('http');
